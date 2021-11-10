@@ -173,7 +173,8 @@ class WhoisConnector(BaseConnector):
                     return True
 
         # Check if none of the data that we need is present or not
-        if (not contacts.get('admin')) and (not contacts.get('tech')) and (not contacts.get('registrant')) and (not contacts.get('billing')):
+        if (not contacts.get('admin')) and (not contacts.get('tech')) and (not contacts.get('registrant')) and \
+                (not contacts.get('billing')):
             return True
 
         return False
@@ -435,7 +436,7 @@ class WhoisConnector(BaseConnector):
                 if whois_response is None:
                     return action_result.get_status()
             else:
-                self.debug_print("No second API call required as the server information could not be fetched from the first WHOIS API call")
+                self.debug_print(WHOIS_NO_SEC_API)
 
         self.save_progress("Parsing response")
 
@@ -452,7 +453,8 @@ class WhoisConnector(BaseConnector):
 
         # Even if the query was successfull the data might not be available
         if self._response_no_data(whois_response, domain):
-            return action_result.set_status(phantom.APP_SUCCESS, '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_ERR_QUERY_RETURNED_NO_CONTACTS_DATA))
+            return action_result.set_status(phantom.APP_SUCCESS,
+                                            '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_ERR_QUERY_RETURNED_NO_CONTACTS_DATA))
         else:
             # get the registrant
             if whois_response.get('contacts') and whois_response.get('contacts').get('registrant'):
@@ -462,7 +464,8 @@ class WhoisConnector(BaseConnector):
                 action_result.update_summary(summary)
                 action_result.set_status(phantom.APP_SUCCESS)
             else:
-                action_result.set_status(phantom.APP_SUCCESS, '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_SUCC_QUERY_RETURNED_NO_REGISTRANT_DATA))
+                action_result.set_status(phantom.APP_SUCCESS,
+                                         '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_SUCC_QUERY_RETURNED_NO_REGISTRANT_DATA))
 
         return phantom.APP_SUCCESS
 
