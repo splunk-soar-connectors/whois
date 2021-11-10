@@ -19,18 +19,14 @@ import datetime
 import ipaddress
 import sys
 import time
-
 import phantom.app as phantom
-
 import pythonwhois
 import simplejson as json
 import tldextract
 from bs4 import UnicodeDammit
 from ipwhois import IPDefinedError, IPWhois
-
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
-
 # THIS Connector imports
 from whois_consts import *
 
