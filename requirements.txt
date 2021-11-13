@@ -1,5 +1,5 @@
 beautifulsoup4==4.9.1
-dns==1.16.0
+dnspython==1.16.0
 ipwhois==1.1.0
 pythonwhois==2.4.3
 requests-file==1.4.2
