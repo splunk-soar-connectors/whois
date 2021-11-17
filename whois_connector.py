@@ -1,28 +1,35 @@
 # File: whois_connector.py
+#
 # Copyright (c) 2016-2021 Splunk Inc.
 #
-# Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+#
 # Phantom imports
-import phantom.app as phantom
+import datetime
+import ipaddress
+import sys
+import time
 
-from phantom.base_connector import BaseConnector
+import phantom.app as phantom
+import pythonwhois
+import simplejson as json
+import tldextract
+from bs4 import UnicodeDammit
+from ipwhois import IPDefinedError, IPWhois
 from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
 # THIS Connector imports
 from whois_consts import *
-
-import simplejson as json
-import pythonwhois
-import datetime
-import time
-from ipwhois import IPWhois
-from ipwhois import IPDefinedError
-from bs4 import UnicodeDammit
-import tldextract
-import ipaddress
-import sys
 
 TLD_LIST_CACHE_FILE_NAME = "public_suffix_list.dat"
 ISO_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -163,7 +170,8 @@ class WhoisConnector(BaseConnector):
                     return True
 
         # Check if none of the data that we need is present or not
-        if (not contacts.get('admin')) and (not contacts.get('tech')) and (not contacts.get('registrant')) and (not contacts.get('billing')):
+        if (not contacts.get('admin')) and (not contacts.get('tech')) and (not contacts.get('registrant')) and \
+                (not contacts.get('billing')):
             return True
 
         return False
@@ -425,7 +433,7 @@ class WhoisConnector(BaseConnector):
                 if whois_response is None:
                     return action_result.get_status()
             else:
-                self.debug_print("No second API call required as the server information could not be fetched from the first WHOIS API call")
+                self.debug_print(WHOIS_NO_SEC_API)
 
         self.save_progress("Parsing response")
 
@@ -442,7 +450,8 @@ class WhoisConnector(BaseConnector):
 
         # Even if the query was successfull the data might not be available
         if self._response_no_data(whois_response, domain):
-            return action_result.set_status(phantom.APP_SUCCESS, '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_ERR_QUERY_RETURNED_NO_CONTACTS_DATA))
+            return action_result.set_status(phantom.APP_SUCCESS,
+                                            '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_ERR_QUERY_RETURNED_NO_CONTACTS_DATA))
         else:
             # get the registrant
             if whois_response.get('contacts') and whois_response.get('contacts').get('registrant'):
@@ -452,7 +461,8 @@ class WhoisConnector(BaseConnector):
                 action_result.update_summary(summary)
                 action_result.set_status(phantom.APP_SUCCESS)
             else:
-                action_result.set_status(phantom.APP_SUCCESS, '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_SUCC_QUERY_RETURNED_NO_REGISTRANT_DATA))
+                action_result.set_status(phantom.APP_SUCCESS,
+                                         '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_SUCC_QUERY_RETURNED_NO_REGISTRANT_DATA))
 
         return phantom.APP_SUCCESS
 
@@ -495,4 +505,4 @@ if __name__ == '__main__':
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
 
-    exit(0)
+    sys.exit(0)

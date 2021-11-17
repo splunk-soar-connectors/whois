@@ -1,0 +1,7 @@
+beautifulsoup4==4.9.1
+dnspython==1.16.0
+ipwhois==1.1.0
+pythonwhois==2.4.3
+requests-file==1.4.2
+simplejson==3.17.2
+tldextract==2.1.0
