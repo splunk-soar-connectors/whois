@@ -1,38 +1,44 @@
 Splunk SOAR WHOIS
-Copyright 2016-2022 Splunk Inc.
+Copyright (c) 2016-2022 Splunk Inc.
 
 Third-party Software Attributions:
 
-Library: pythonwhois
-Version: 2.4.3
-License: WTFPL
-Unknown copyright
+Library: beautifulsoup4
+Version: 4.9.1
+License: MIT
+Copyright 2004-2017 Leonard Richardson
+Copyright 2004-2019 Leonard Richardson
+Copyright 2018 Isaac Muse
+
+Library: dnspython
+Version: 1.16.0
+License: ISC
+Copyright 2001-2017 Nominum, Inc
+Copyright Dnspython Contributors
 
 Library: ipwhois
 Version: 1.1.0
 License: BSD 2
 Copyright 2013-2019 Philip Hane
 
+Library: pythonwhois
+Version: 2.4.3
+License: WTFPL
+Unknown copyright
+
+Library: requests-file
+Version: 1.4.2
+License: Apache 2.0
+Copyright 2015 Red Hat, Inc
+
+Library: simplejson
+Version: 3.17.2
+License: Academic 2.1
+License: MIT
+Copyright 2003-2004 Lawrence E
+Copyright 2006 Bob Ippolito
+
 Library: tldextract
 Version: 2.1.0
 License: BSD 2
 Copyright 2013-2017 John Kurkowski
-
-Library: beautifulsoup4
-Version: 4.9.1
-License: MIT
-Copyright 2018 Isaac Muse
-Copyright 2004-2019 Leonard Richardson
-Copyright 2004-2017 Leonard Richardson
-
-Library: simplejson
-Version: 3.17.2
-License: MIT
-License: Academic 2.1
-Copyright 2003-2004 Lawrence E
-Copyright 2006 Bob Ippolito
-
-Library: pudb
-Version: 2019.2
-License: MIT
-Copyright 2009 Andreas Kloeckner and contributors
