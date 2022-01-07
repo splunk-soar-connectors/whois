@@ -1,2 +1,2 @@
 **Unreleased**
-* FIPS Compliance - Mark as compliant [PAPP-21500]
+* Marked the app as FIPS Compliant [PAPP-21500]
