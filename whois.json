@@ -11,14 +11,14 @@
     "product_vendor": "Generic",
     "product_name": "Whois",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.10.0.40961",
+    "min_phantom_version": "5.1.0",
     "fips_compliant": true,
     "python_version": "3",
     "license": "Copyright (c) 2016-2022 Splunk Inc.",
     "logo": "logo_splunk.svg",
     "logo_dark": "logo_splunk_dark.svg",
     "latest_tested_versions": [
-        "pythonwhois v2.4.3",
+        "wizard-whois 2.5.9",
         "ipwhois v1.1.0",
         "dnspython v1.16.0"
     ],
@@ -33,8 +33,12 @@
                 "input_file": "wheels/requests_file-1.4.2-py2.py3-none-any.whl"
             },
             {
-                "module": "pythonwhois",
-                "input_file": "wheels/pythonwhois-2.4.3-py2.py3-none-any.whl"
+                "module": "wizard-whois",
+                "input_file": "wheels/wizard_whois-2.5.9-py2.py3-none-any.whl"
+            },
+            {
+                "module": "argparse",
+                "input_file": "wheels/argparse-1.4.0-py2.py3-none-any.whl"
             },
             {
                 "module": "dns",
