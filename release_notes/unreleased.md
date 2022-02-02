@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Updated whois dependency to be compatible with python 3.9
+* Added support for Python 3.9
