@@ -21,11 +21,6 @@ Version: 1.1.0
 License: BSD 2
 Copyright 2013-2019 Philip Hane
 
-Library: pythonwhois
-Version: 2.4.3
-License: WTFPL
-Unknown copyright
-
 Library: requests-file
 Version: 1.4.2
 License: Apache 2.0
@@ -42,3 +37,9 @@ Library: tldextract
 Version: 2.1.0
 License: BSD 2
 Copyright 2013-2017 John Kurkowski
+
+Library: wizard-whois
+Version: 2.5.9
+License: MIT
+License: WTFPL
+Copyright 2020 Michael Ramsey <mike@hackerdise.me>
