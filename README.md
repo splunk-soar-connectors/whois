@@ -2,16 +2,16 @@
 # WHOIS
 
 Publisher: Splunk  
-Connector Version: 2\.1\.4  
+Connector Version: 2\.1\.7  
 Product Vendor: Generic  
 Product Name: Whois  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 4\.10\.0\.40961  
+Minimum Product Version: 5\.1\.0  
 
 This app implements investigative actions that query the whois database
 
-[comment]: # " File: readme.md"
-[comment]: # "  Copyright (c) 2016-2021 Splunk Inc."
+[comment]: # " File: README.md"
+[comment]: # "  Copyright (c) 2016-2022 Splunk Inc."
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
@@ -34,10 +34,10 @@ The user is requested to use CONFIGURE NEW ASSET option to configure a new asset
 This app uses the python-ipwhois module, which is licensed under the BSD License, Copyright (c)
 2013-2019 Philip Hane.
 
-## pythonwhois
+## wizard-whois
 
-This app uses the python pythonwhois module, which is licensed under the WTFPL License, Copyright
-(c) Sven Slootweg.
+This app uses the python wizard-whois module, which is licensed under the MIT License, Copyright (c)
+Michael Ramsey.
 
 ## tldextract
 
