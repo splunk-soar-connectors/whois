@@ -141,6 +141,7 @@ class WhoisConnector(BaseConnector):
             return self.set_status(phantom.APP_ERROR, "Error occurred while fetching the Phantom server's Python major version")
 
         self._state = self.load_state()
+        self.save_progress('paul: Loading state: %s' % self._state)
         config = self.get_config()
 
         self._update_days = config['update_days']
@@ -177,6 +178,12 @@ class WhoisConnector(BaseConnector):
         return False
 
     def _handle_test_connectivity(self, param):
+        self.save_progress('paul: _handle_test_connectivity====')
+        state_file = self.get_state_file_path()
+
+        stat_create = self._create_state_file(state_file)
+        self.save_progress('paul: state_file: %s' % state_file)
+        self.save_progress('paul: stat_create: %s' % stat_create)
 
         ip = '1.1.1.1'
 
