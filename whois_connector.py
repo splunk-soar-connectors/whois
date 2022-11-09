@@ -22,7 +22,7 @@ import time
 import phantom.app as phantom
 import simplejson as json
 import tldextract
-import wizard_whois
+import pythonwhois
 from bs4 import UnicodeDammit
 from ipwhois import IPDefinedError, IPWhois
 from phantom.action_result import ActionResult
@@ -349,7 +349,7 @@ class WhoisConnector(BaseConnector):
         domain = ""
         if result.suffix and result.domain:
             domain = "{0}.{1}".format(self._handle_py_ver_compat_for_input_str(result.domain),
-                                        self._handle_py_ver_compat_for_input_str(result.suffix))  # pylint: disable=E1101
+                                      self._handle_py_ver_compat_for_input_str(result.suffix))  # pylint: disable=E1101
         elif result.suffix:
             domain = "{0}".format(self._handle_py_ver_compat_for_input_str(result.suffix))  # pylint: disable=E1101
         elif result.domain:
@@ -359,16 +359,16 @@ class WhoisConnector(BaseConnector):
     def _fetch_whois_info(self, action_result, domain, server):
         '''
         This method fetches the whois information for the given domain based on the
-        value of the server if provided or by using the default server of the wizard_whois library.
+        value of the server if provided or by using the default server of the pythonwhois library.
         '''
 
         try:
             self.debug_print("Fetching the WHOIS information. Server is: {}".format(server))
             if server:
-                raw_whois_resp = wizard_whois.net.get_whois_raw(domain, server)
-                whois_response = wizard_whois.parse.parse_raw_whois(raw_whois_resp)
+                raw_whois_resp = pythonwhois.net.get_whois_raw(domain, server)
+                whois_response = pythonwhois.parse.parse_raw_whois(raw_whois_resp)
             else:
-                whois_response = wizard_whois.get_whois(domain)
+                whois_response = pythonwhois.get_whois(domain)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             action_result.set_status(phantom.APP_ERROR, WHOIS_ERR_QUERY, error_message)
@@ -410,10 +410,10 @@ class WhoisConnector(BaseConnector):
 
         self.save_progress("Querying...")
 
-        wizard_whois.parse.registrant_regexes.extend(REGISTRANT_REGEXES)
-        wizard_whois.parse.admin_contact_regexes.extend(ADMIN_CONTACT_REGEXES)
-        wizard_whois.parse.tech_contact_regexes.extend(TECH_CONTACT_REGEXES)
-        wizard_whois.parse.billing_contact_regexes.extend(BILLING_CONTACT_REGEXES)
+        pythonwhois.parse.registrant_regexes.extend(REGISTRANT_REGEXES)
+        pythonwhois.parse.admin_contact_regexes.extend(ADMIN_CONTACT_REGEXES)
+        pythonwhois.parse.tech_contact_regexes.extend(TECH_CONTACT_REGEXES)
+        pythonwhois.parse.billing_contact_regexes.extend(BILLING_CONTACT_REGEXES)
 
         # 1. Attempting to fetch the whois information with the server
         # if provided or without it if not provided
