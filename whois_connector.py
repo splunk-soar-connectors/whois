@@ -23,7 +23,6 @@ import phantom.app as phantom
 import pythonwhois
 import simplejson as json
 import tldextract
-from bs4 import UnicodeDammit
 from ipwhois import IPDefinedError, IPWhois
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
@@ -60,20 +59,6 @@ class WhoisConnector(BaseConnector):
         self._python_version = None
         self._update_days = None
 
-    def _handle_py_ver_compat_for_input_str(self, input_str):
-        """
-        This method returns the encoded|original string based on the Python version.
-        :param input_str: Input string to be processed
-        :return: input_str (Processed input string based on following logic 'input_str - Python 3; encoded input_str - Python 2')
-        """
-        try:
-            if input_str and self._python_version < 3:
-                input_str = UnicodeDammit(input_str).unicode_markup.encode('utf-8')
-        except:
-            self.debug_print("Error occurred while handling python 2to3 compatibility for the input string")
-
-        return input_str
-
     def _get_error_message_from_exception(self, e):
         """ This method is used to get appropriate error message from the exception.
         :param e: Exception object
@@ -93,13 +78,6 @@ class WhoisConnector(BaseConnector):
                 error_message = ERROR_MESSAGE_UNAVAILABLE
         except:
             error_code = ERROR_CODE_UNAVAILABLE
-            error_message = ERROR_MESSAGE_UNAVAILABLE
-
-        try:
-            error_message = self._handle_py_ver_compat_for_input_str(error_message)
-        except TypeError:
-            error_message = TYPE_ERROR_MESSAGE
-        except:
             error_message = ERROR_MESSAGE_UNAVAILABLE
 
         try:
@@ -274,7 +252,7 @@ class WhoisConnector(BaseConnector):
                 summary_net = {x: net.get(x) for x in wanted_keys}
                 summary[WHOIS_JSON_NETS].append(summary_net)
                 message += '\nRange: {0}'.format(summary_net['range'])
-                message += '\nAddress: {0}'.format(self._handle_py_ver_compat_for_input_str(summary_net['address']))
+                message += '\nAddress: {0}'.format(summary_net['address'])
 
         return action_result.set_status(phantom.APP_SUCCESS, message)
 
@@ -283,7 +261,7 @@ class WhoisConnector(BaseConnector):
 
         :param input_ip_address: IP address
         :return: status (success/failure)
-        """
+        """`
 
         ip_address_input = input_ip_address
 
@@ -348,12 +326,12 @@ class WhoisConnector(BaseConnector):
 
         domain = ""
         if result.suffix and result.domain:
-            domain = "{0}.{1}".format(self._handle_py_ver_compat_for_input_str(result.domain),
-                                      self._handle_py_ver_compat_for_input_str(result.suffix))  # pylint: disable=E1101
+            domain = "{0}.{1}".format(result.domain,
+                                      result.suffix)  # pylint: disable=E1101
         elif result.suffix:
-            domain = "{0}".format(self._handle_py_ver_compat_for_input_str(result.suffix))  # pylint: disable=E1101
+            domain = "{0}".format(result.suffix)  # pylint: disable=E1101
         elif result.domain:
-            domain = "{0}".format(self._handle_py_ver_compat_for_input_str(result.domain))  # pylint: disable=E1101
+            domain = "{0}".format(result.domain)  # pylint: disable=E1101
         return domain
 
     def _fetch_whois_info(self, action_result, domain, server):
@@ -426,9 +404,7 @@ class WhoisConnector(BaseConnector):
         # in the output response of the first step above
         if whois_response.get('contacts') and not whois_response.get('contacts').get('registrant'):
             if whois_response.get('whois_server'):
-                resp_server = UnicodeDammit(whois_response.get('whois_server')[0]).unicode_markup.encode('utf-8')
-
-                whois_response = self._fetch_whois_info(action_result, domain, resp_server)
+                whois_response = self._fetch_whois_info(action_result, domain, server)
 
                 if whois_response is None:
                     return action_result.get_status()
