@@ -11,7 +11,7 @@
     "product_vendor": "Generic",
     "product_name": "Whois",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.3.5",
+    "min_phantom_version": "5.4.0",
     "fips_compliant": true,
     "python_version": "3",
     "license": "Copyright (c) 2016-2022 Splunk Inc.",
@@ -34,7 +34,7 @@
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/py3/certifi-2022.9.24-py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "charset_normalizer",
@@ -86,7 +86,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.12-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     },
@@ -762,11 +762,11 @@
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/py3/certifi-2022.9.24-py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "charset_normalizer",
-                "input_file": "wheels/py3/charset_normalizer-2.1.1-py3-none-any.whl"
+                "input_file": "wheels/py39/charset_normalizer-3.0.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             },
             {
                 "module": "dnspython",
@@ -786,7 +786,7 @@
             },
             {
                 "module": "requests",
-                "input_file": "wheels/py3/requests-2.28.1-py3-none-any.whl"
+                "input_file": "wheels/py3/requests-2.28.2-py3-none-any.whl"
             },
             {
                 "module": "requests_file",
@@ -794,7 +794,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-65.5.1-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-67.2.0-py3-none-any.whl"
             },
             {
                 "module": "simplejson",
@@ -814,7 +814,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.12-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     }

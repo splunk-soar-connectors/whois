@@ -80,14 +80,10 @@ class WhoisConnector(BaseConnector):
             error_code = ERROR_CODE_UNAVAILABLE
             error_message = ERROR_MESSAGE_UNAVAILABLE
 
-        try:
-            if error_code in ERROR_CODE_UNAVAILABLE:
-                error_text = "Error Message: {0}".format(error_message)
-            else:
-                error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_message)
-        except:
-            self.debug_print("Error occurred while parsing the error message")
-            error_text = PARSE_ERROR_MESSAGE
+        if not error_code:
+            error_text = "Error Message: {0}".format(error_message)
+        else:
+            error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_message)
 
         return error_text
 
@@ -261,7 +257,7 @@ class WhoisConnector(BaseConnector):
 
         :param input_ip_address: IP address
         :return: status (success/failure)
-        """`
+        """
 
         ip_address_input = input_ip_address
 
@@ -358,6 +354,16 @@ class WhoisConnector(BaseConnector):
 
         return whois_response
 
+    def _sanitize_dict(self, obj):
+
+        if isinstance(obj, str):
+            return obj.replace('\\u0000', '')
+        if isinstance(obj, list):
+            return [self._sanitize_dict(item) for item in obj]
+        if isinstance(obj, dict):
+            return {k: self._sanitize_dict(v) for k, v in obj.items()}
+        return obj
+
     def _whois_domain(self, param):
 
         config = self.get_config()
@@ -418,6 +424,7 @@ class WhoisConnector(BaseConnector):
             # parsable, so will need to go the 'fallback' way.
             # TODO: Find a better way to do this
             whois_response = json.dumps(whois_response, default=_json_fallback)
+            whois_response = self._sanitize_dict(whois_response)
             whois_response = json.loads(whois_response)
             action_result.add_data(whois_response)
         except Exception as e:
