@@ -18,7 +18,7 @@
     "logo": "logo_splunk.svg",
     "logo_dark": "logo_splunk_dark.svg",
     "latest_tested_versions": [
-        "pythonwhois-alt 2.4.6",
+        "pythonwhois-alt v2.4.6",
         "ipwhois v1.1.0",
         "dnspython v1.16.0"
     ],
@@ -95,7 +95,7 @@
             "description": "Update the tld list once every N days",
             "data_type": "numeric",
             "order": 0,
-            "default": "14",
+            "default": 14,
             "required": true
         }
     },

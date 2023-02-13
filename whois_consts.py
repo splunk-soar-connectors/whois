@@ -35,7 +35,6 @@ WHOIS_JSON_CACHE_UPDATE_TIME = "cache_update_time"
 WHOIS_JSON_CACHE_EXP_DAYS = "update_days"
 
 # Constants relating to '_get_error_message_from_exception'
-ERROR_CODE_UNAVAILABLE = "Error code unavailable"
 ERROR_MESSAGE_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
 TYPE_ERROR_MESSAGE = "Error occurred while connecting to the server. Please check the asset configuration and|or the action" \
     " parameters"

@@ -59,26 +59,28 @@ class WhoisConnector(BaseConnector):
         self._python_version = None
         self._update_days = None
 
+    def _dump_error_log(self, error, message="Exception occurred."):
+        self.error_print(message, dump_object=error)
+
     def _get_error_message_from_exception(self, e):
         """ This method is used to get appropriate error message from the exception.
         :param e: Exception object
         :return: error message
         """
 
+        error_code = None
+        error_message = ERROR_MESSAGE_UNAVAILABLE
+
+        self._dump_error_log(e, "Error occurred.")
         try:
             if hasattr(e, 'args'):
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_message = e.args[1]
                 elif len(e.args) == 1:
-                    error_code = ERROR_CODE_UNAVAILABLE
                     error_message = e.args[0]
-            else:
-                error_code = ERROR_CODE_UNAVAILABLE
-                error_message = ERROR_MESSAGE_UNAVAILABLE
-        except:
-            error_code = ERROR_CODE_UNAVAILABLE
-            error_message = ERROR_MESSAGE_UNAVAILABLE
+        except Exception as e:
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
 
         if not error_code:
             error_text = "Error Message: {0}".format(error_message)
@@ -100,7 +102,7 @@ class WhoisConnector(BaseConnector):
                     return action_result.set_status(phantom.APP_ERROR, INVALID_INTEGER_ERROR_MESSAGE.format(key)), None
 
                 parameter = int(parameter)
-            except:
+            except Exception:
                 return action_result.set_status(phantom.APP_ERROR, INVALID_INTEGER_ERROR_MESSAGE.format(key)), None
 
             if parameter <= 0:
@@ -111,10 +113,13 @@ class WhoisConnector(BaseConnector):
     def initialize(self):
         try:
             self._python_version = int(sys.version_info[0])
-        except:
+        except Exception:
             return self.set_status(phantom.APP_ERROR, "Error occurred while fetching the Phantom server's Python major version")
 
         self._state = self.load_state()
+        if not isinstance(self._state, dict):
+            self.debug_print("Resetting the state file with the default format")
+            self._state = {"app_version": self.get_app_json().get("app_version")}
         config = self.get_config()
 
         self._update_days = config['update_days']
@@ -127,6 +132,9 @@ class WhoisConnector(BaseConnector):
     def finalize(self):
         self.save_state(self._state)
         return phantom.APP_SUCCESS
+
+    def replace_null_values(self, data):
+        return json.loads(json.dumps(data).replace('\\u0000', '\\\\u0000'))
 
     def _response_no_data(self, response, obj):
 
@@ -266,7 +274,7 @@ class WhoisConnector(BaseConnector):
                 ipaddress.ip_address(unicode(ip_address_input))
             except NameError:
                 ipaddress.ip_address(str(ip_address_input))
-        except:
+        except Exception:
             return False
 
         return True
@@ -354,16 +362,6 @@ class WhoisConnector(BaseConnector):
 
         return whois_response
 
-    def _sanitize_dict(self, obj):
-
-        if isinstance(obj, str):
-            return obj.replace('\\u0000', '')
-        if isinstance(obj, list):
-            return [self._sanitize_dict(item) for item in obj]
-        if isinstance(obj, dict):
-            return {k: self._sanitize_dict(v) for k, v in obj.items()}
-        return obj
-
     def _whois_domain(self, param):
 
         config = self.get_config()
@@ -424,7 +422,6 @@ class WhoisConnector(BaseConnector):
             # parsable, so will need to go the 'fallback' way.
             # TODO: Find a better way to do this
             whois_response = json.dumps(whois_response, default=_json_fallback)
-            whois_response = self._sanitize_dict(whois_response)
             whois_response = json.loads(whois_response)
             action_result.add_data(whois_response)
         except Exception as e:
@@ -467,6 +464,12 @@ class WhoisConnector(BaseConnector):
             result = self._handle_test_connectivity(param)
         else:
             result = self.unknown_action()
+
+        action_results = self.get_action_results()
+        if len(action_results) > 0:
+            action_result = action_results[-1]
+            action_result._ActionResult__data = self.replace_null_values(action_result._ActionResult__data)
+            action_result.set_status(result, self.replace_null_values(action_result.get_message()))
 
         return result
 
