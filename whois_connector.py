@@ -407,8 +407,8 @@ class WhoisConnector(BaseConnector):
         # 2. Attempting to fetch the whois information with the server obtained
         # in the output response of the first step above
         if whois_response.get('contacts') and not whois_response.get('contacts').get('registrant'):
-            if whois_response.get('whois_server'):
-                whois_response = self._fetch_whois_info(action_result, domain, server)
+            if whois_response.get('whois_server') and whois_response.get('whois_server')[0]:
+                whois_response = self._fetch_whois_info(action_result, domain, whois_response.get('whois_server')[0])
 
                 if whois_response is None:
                     return action_result.get_status()
