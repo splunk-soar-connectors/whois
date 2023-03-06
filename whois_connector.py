@@ -371,6 +371,8 @@ class WhoisConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
         action_result.set_param({phantom.APP_JSON_DOMAIN: domain})
+        if self._is_ip(domain):
+            return action_result.set_status(phantom.APP_ERROR, "Parameter 'domain' failed validation")
 
         # This sleep is required between two calls, else the server might
         # throttle the queries when done in quick succession, which leads

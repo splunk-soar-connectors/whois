@@ -766,7 +766,7 @@
             },
             {
                 "module": "charset_normalizer",
-                "input_file": "wheels/py39/charset_normalizer-3.0.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+                "input_file": "wheels/py39/charset_normalizer-3.1.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             },
             {
                 "module": "dnspython",
@@ -794,7 +794,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-67.2.0-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-67.5.1-py3-none-any.whl"
             },
             {
                 "module": "simplejson",
@@ -806,7 +806,7 @@
             },
             {
                 "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.3.2.post1-py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.4-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
