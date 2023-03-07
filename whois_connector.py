@@ -56,7 +56,6 @@ class WhoisConnector(BaseConnector):
         self._state_file_path = None
         self._cache_file_path = None
         self._state = {}
-        self._python_version = None
         self._update_days = None
 
     def _dump_error_log(self, error, message="Exception occurred."):
@@ -111,10 +110,6 @@ class WhoisConnector(BaseConnector):
         return phantom.APP_SUCCESS, parameter
 
     def initialize(self):
-        try:
-            self._python_version = int(sys.version_info[0])
-        except Exception:
-            return self.set_status(phantom.APP_ERROR, "Error occurred while fetching the Phantom server's Python major version")
 
         self._state = self.load_state()
         if not isinstance(self._state, dict):
