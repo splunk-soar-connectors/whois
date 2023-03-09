@@ -435,7 +435,7 @@ class WhoisConnector(BaseConnector):
                 registrant = whois_response['contacts']['registrant']
                 wanted_keys = ['organization', 'name', 'city', 'country']
                 summary = {x: registrant[x] for x in wanted_keys if x in registrant}
-                action_result.update_summary(summary)
+                action_result.update_summary(self.replace_null_values(summary))
                 action_result.set_status(phantom.APP_SUCCESS)
             else:
                 action_result.set_status(phantom.APP_SUCCESS,
