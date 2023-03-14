@@ -6,19 +6,19 @@
     "publisher": "Splunk",
     "type": "information",
     "main_module": "whois_connector.py",
-    "app_version": "2.1.7",
+    "app_version": "2.2.0",
     "utctime_updated": "2022-02-02T21:55:32.000000Z",
     "product_vendor": "Generic",
     "product_name": "Whois",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.1.0",
+    "min_phantom_version": "5.5.0",
     "fips_compliant": true,
     "python_version": "3",
-    "license": "Copyright (c) 2016-2022 Splunk Inc.",
+    "license": "Copyright (c) 2016-2023 Splunk Inc.",
     "logo": "logo_splunk.svg",
     "logo_dark": "logo_splunk_dark.svg",
     "latest_tested_versions": [
-        "wizard-whois 2.5.9",
+        "pythonwhois-alt v2.4.6",
         "ipwhois v1.1.0",
         "dnspython v1.16.0"
     ],
@@ -34,11 +34,11 @@
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/shared/certifi-2021.10.8-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "charset_normalizer",
-                "input_file": "wheels/py3/charset_normalizer-2.0.11-py3-none-any.whl"
+                "input_file": "wheels/py3/charset_normalizer-2.0.12-py3-none-any.whl"
             },
             {
                 "module": "dnspython",
@@ -46,11 +46,15 @@
             },
             {
                 "module": "idna",
-                "input_file": "wheels/py3/idna-3.3-py3-none-any.whl"
+                "input_file": "wheels/py3/idna-3.4-py3-none-any.whl"
             },
             {
                 "module": "ipwhois",
                 "input_file": "wheels/shared/ipwhois-1.1.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "pythonwhois_alt",
+                "input_file": "wheels/py3/pythonwhois_alt-2.4.6-py3-none-any.whl"
             },
             {
                 "module": "requests",
@@ -74,7 +78,7 @@
             },
             {
                 "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.3.1-py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.3.2.post1-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
@@ -82,11 +86,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.8-py2.py3-none-any.whl"
-            },
-            {
-                "module": "wizard_whois",
-                "input_file": "wheels/shared/wizard_whois-2.5.9-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     },
@@ -95,7 +95,7 @@
             "description": "Update the tld list once every N days",
             "data_type": "numeric",
             "order": 0,
-            "default": "14",
+            "default": 14,
             "required": true
         }
     },
@@ -762,11 +762,11 @@
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/shared/certifi-2021.10.8-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "charset_normalizer",
-                "input_file": "wheels/py3/charset_normalizer-2.0.11-py3-none-any.whl"
+                "input_file": "wheels/py39/charset_normalizer-3.1.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             },
             {
                 "module": "dnspython",
@@ -774,15 +774,19 @@
             },
             {
                 "module": "idna",
-                "input_file": "wheels/py3/idna-3.3-py3-none-any.whl"
+                "input_file": "wheels/py3/idna-3.4-py3-none-any.whl"
             },
             {
                 "module": "ipwhois",
                 "input_file": "wheels/shared/ipwhois-1.1.0-py2.py3-none-any.whl"
             },
             {
+                "module": "pythonwhois_alt",
+                "input_file": "wheels/py3/pythonwhois_alt-2.4.6-py3-none-any.whl"
+            },
+            {
                 "module": "requests",
-                "input_file": "wheels/shared/requests-2.27.1-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/requests-2.28.2-py3-none-any.whl"
             },
             {
                 "module": "requests_file",
@@ -790,7 +794,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-60.7.0-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-67.5.1-py3-none-any.whl"
             },
             {
                 "module": "simplejson",
@@ -802,7 +806,7 @@
             },
             {
                 "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.3.1-py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.4-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
@@ -810,11 +814,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.8-py2.py3-none-any.whl"
-            },
-            {
-                "module": "wizard_whois",
-                "input_file": "wheels/shared/wizard_whois-2.5.9-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     }
