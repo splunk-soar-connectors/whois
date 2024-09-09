@@ -3,9 +3,7 @@ ipwhois==1.1.0
 pythonwhois-alt==2.4.6
 # Requests is a dependency of tldextract so it can't be removed. Freezing
 # it at the version used by platform.
-requests==2.31.0
 requests-file==1.4.2
 tldextract==2.1.0
 # Freezing urllib3 version because without it the unsupported 2.0 version is
 # installed by default as a sub-dependency
-urllib3==1.26.18

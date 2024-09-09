@@ -2,7 +2,7 @@
 # WHOIS
 
 Publisher: Splunk  
-Connector Version: 2.2.1  
+Connector Version: 2.2.2  
 Product Vendor: Generic  
 Product Name: Whois  
 Product Version Supported (regex): ".\*"  
@@ -11,7 +11,7 @@ Minimum Product Version: 6.1.1
 This app implements investigative actions that query the whois database
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2016-2023 Splunk Inc."
+[comment]: # "  Copyright (c) 2016-2024 Splunk Inc."
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
