@@ -6,7 +6,7 @@ Connector Version: 2.2.2
 Product Vendor: Generic  
 Product Name: Whois  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.1.1  
+Minimum Product Version: 6.2.1  
 
 This app implements investigative actions that query the whois database
 
