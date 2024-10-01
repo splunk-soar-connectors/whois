@@ -22,38 +22,6 @@
         "ipwhois v1.1.0",
         "dnspython v1.16.0"
     ],
-    "pip_dependencies": {
-        "wheel": [
-            {
-                "module": "argparse",
-                "input_file": "wheels/shared/argparse-1.4.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "dnspython",
-                "input_file": "wheels/shared/dnspython-1.16.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "ipwhois",
-                "input_file": "wheels/shared/ipwhois-1.1.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "pythonwhois_alt",
-                "input_file": "wheels/py3/pythonwhois_alt-2.4.6-py3-none-any.whl"
-            },
-            {
-                "module": "requests_file",
-                "input_file": "wheels/shared/requests_file-1.4.2-py2.py3-none-any.whl"
-            },
-            {
-                "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-59.6.0-py3-none-any.whl"
-            },
-            {
-                "module": "tldextract",
-                "input_file": "wheels/shared/tldextract-2.1.0-py2.py3-none-any.whl"
-            }
-        ]
-    },
     "configuration": {
         "update_days": {
             "description": "Update the tld list once every N days",
@@ -713,37 +681,5 @@
             },
             "versions": "EQ(*)"
         }
-    ],
-    "pip39_dependencies": {
-        "wheel": [
-            {
-                "module": "argparse",
-                "input_file": "wheels/shared/argparse-1.4.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "dnspython",
-                "input_file": "wheels/shared/dnspython-1.16.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "ipwhois",
-                "input_file": "wheels/shared/ipwhois-1.1.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "pythonwhois_alt",
-                "input_file": "wheels/py3/pythonwhois_alt-2.4.6-py3-none-any.whl"
-            },
-            {
-                "module": "requests_file",
-                "input_file": "wheels/shared/requests_file-1.4.2-py2.py3-none-any.whl"
-            },
-            {
-                "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-74.1.2-py3-none-any.whl"
-            },
-            {
-                "module": "tldextract",
-                "input_file": "wheels/shared/tldextract-2.1.0-py2.py3-none-any.whl"
-            }
-        ]
-    }
+    ]
 }
