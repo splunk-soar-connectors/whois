@@ -20,7 +20,7 @@
     "latest_tested_versions": [
         "pythonwhois-alt v2.4.6",
         "ipwhois v1.1.0",
-        "dnspython v2.7.0"
+        "dnspython v1.16.0"
     ],
     "configuration": {
         "update_days": {
