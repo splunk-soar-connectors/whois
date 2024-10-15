@@ -6,12 +6,12 @@
     "publisher": "Splunk",
     "type": "information",
     "main_module": "whois_connector.py",
-    "app_version": "2.2.2",
+    "app_version": "2.2.3",
     "utctime_updated": "2023-12-12T14:17:49.000000Z",
     "product_vendor": "Generic",
     "product_name": "Whois",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.1.1",
+    "min_phantom_version": "6.2.1",
     "fips_compliant": true,
     "python_version": "3",
     "license": "Copyright (c) 2016-2024 Splunk Inc.",
@@ -22,38 +22,6 @@
         "ipwhois v1.1.0",
         "dnspython v1.16.0"
     ],
-    "pip_dependencies": {
-        "wheel": [
-            {
-                "module": "argparse",
-                "input_file": "wheels/shared/argparse-1.4.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "dnspython",
-                "input_file": "wheels/shared/dnspython-1.16.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "ipwhois",
-                "input_file": "wheels/shared/ipwhois-1.1.0-py2.py3-none-any.whl"
-            },
-            {
-                "module": "pythonwhois_alt",
-                "input_file": "wheels/py3/pythonwhois_alt-2.4.6-py3-none-any.whl"
-            },
-            {
-                "module": "requests_file",
-                "input_file": "wheels/shared/requests_file-1.4.2-py2.py3-none-any.whl"
-            },
-            {
-                "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-59.6.0-py3-none-any.whl"
-            },
-            {
-                "module": "tldextract",
-                "input_file": "wheels/shared/tldextract-2.1.0-py2.py3-none-any.whl"
-            }
-        ]
-    },
     "configuration": {
         "update_days": {
             "description": "Update the tld list once every N days",
@@ -714,11 +682,15 @@
             "versions": "EQ(*)"
         }
     ],
-    "pip39_dependencies": {
+    "pip_dependencies": {
         "wheel": [
             {
                 "module": "argparse",
                 "input_file": "wheels/shared/argparse-1.4.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "defusedxml",
+                "input_file": "wheels/shared/defusedxml-0.7.1-py2.py3-none-any.whl"
             },
             {
                 "module": "dnspython",
@@ -726,7 +698,7 @@
             },
             {
                 "module": "ipwhois",
-                "input_file": "wheels/shared/ipwhois-1.1.0-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/ipwhois-1.3.0-py2.py3-none-any.whl"
             },
             {
                 "module": "pythonwhois_alt",
@@ -738,7 +710,43 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-74.1.2-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-59.6.0-py3-none-any.whl"
+            },
+            {
+                "module": "tldextract",
+                "input_file": "wheels/shared/tldextract-2.1.0-py2.py3-none-any.whl"
+            }
+        ]
+    },
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "argparse",
+                "input_file": "wheels/shared/argparse-1.4.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "defusedxml",
+                "input_file": "wheels/shared/defusedxml-0.7.1-py2.py3-none-any.whl"
+            },
+            {
+                "module": "dnspython",
+                "input_file": "wheels/shared/dnspython-1.16.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "ipwhois",
+                "input_file": "wheels/shared/ipwhois-1.3.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "pythonwhois_alt",
+                "input_file": "wheels/py3/pythonwhois_alt-2.4.6-py3-none-any.whl"
+            },
+            {
+                "module": "requests_file",
+                "input_file": "wheels/shared/requests_file-1.4.2-py2.py3-none-any.whl"
+            },
+            {
+                "module": "setuptools",
+                "input_file": "wheels/py3/setuptools-75.1.0-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
