@@ -31,7 +31,7 @@ from phantom.base_connector import BaseConnector
 from whois_consts import *
 
 TLD_LIST_CACHE_FILE_NAME = "public_suffix_list.dat"
-ISO_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 def _json_fallback(obj):
@@ -62,7 +62,7 @@ class WhoisConnector(BaseConnector):
         self.error_print(message, dump_object=error)
 
     def _get_error_message_from_exception(self, e):
-        """ This method is used to get appropriate error message from the exception.
+        """This method is used to get appropriate error message from the exception.
         :param e: Exception object
         :return: error message
         """
@@ -72,7 +72,7 @@ class WhoisConnector(BaseConnector):
 
         self._dump_error_log(e, "Error occurred.")
         try:
-            if hasattr(e, 'args'):
+            if hasattr(e, "args"):
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_message = e.args[1]
@@ -89,7 +89,7 @@ class WhoisConnector(BaseConnector):
         return error_text
 
     def _validate_integer(self, action_result, parameter, key):
-        """ This method checks if the provided input parameter value is a non-zero positive integer.
+        """This method checks if the provided input parameter value is a non-zero positive integer.
         :param action_result: Action result or BaseConnector object
         :param parameter: input parameter
         :param key: input parameter message key
@@ -117,7 +117,7 @@ class WhoisConnector(BaseConnector):
             self._state = {"app_version": self.get_app_json().get("app_version")}
         config = self.get_config()
 
-        self._update_days = config['update_days']
+        self._update_days = config["update_days"]
         status, self._update_days = self._validate_integer(self, self._update_days, "update_days")
         if phantom.is_fail(status):
             return self.get_status()
@@ -129,33 +129,32 @@ class WhoisConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def replace_null_values(self, data):
-        return json.loads(json.dumps(data).replace('\\u0000', '\\\\u0000'))
+        return json.loads(json.dumps(data).replace("\\u0000", "\\\\u0000"))
 
     def _response_no_data(self, response, obj):
 
-        contacts = response['contacts']
+        contacts = response["contacts"]
 
         # First check if the raw data contains any info
-        raw_response = phantom.get_value(response, 'raw')
+        raw_response = phantom.get_value(response, "raw")
         if raw_response:
             for line in raw_response:
-                if (line.lower().find('domain not found') != -1):
-                    self.debug_print('Matched no data string. Domain not found')
+                if line.lower().find("domain not found") != -1:
+                    self.debug_print("Matched no data string. Domain not found")
                     return True
-                if (line.lower().find("no match for '{0}'".format(obj).lower()) != -1):
-                    self.debug_print('Matched no data string. No match for domain')
+                if line.lower().find("no match for '{0}'".format(obj).lower()) != -1:
+                    self.debug_print("Matched no data string. No match for domain")
                     return True
 
         # Check if none of the data that we need is present or not
-        if (not contacts.get('admin')) and (not contacts.get('tech')) and (not contacts.get('registrant')) and \
-                (not contacts.get('billing')):
+        if (not contacts.get("admin")) and (not contacts.get("tech")) and (not contacts.get("registrant")) and (not contacts.get("billing")):
             return True
 
         return False
 
     def _handle_test_connectivity(self, param):
 
-        ip = '1.1.1.1'
+        ip = "1.1.1.1"
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -167,7 +166,7 @@ class WhoisConnector(BaseConnector):
 
         try:
             obj_whois = IPWhois(ip)
-            whois_response = obj_whois.lookup_whois(asn_methods=['whois', 'dns', 'http'])
+            whois_response = obj_whois.lookup_whois(asn_methods=["whois", "dns", "http"])
         except IPDefinedError as e_defined:
             error_message = self._get_error_message_from_exception(e_defined)
             self.debug_print("Got IPDefinedError exception str: {0}".format(error_message))
@@ -194,7 +193,7 @@ class WhoisConnector(BaseConnector):
 
         # Validation for checking valid IP or not (IPV4 as well as IPV6)
         if not self._is_ip(ip):
-            return action_result.set_status(phantom.APP_ERROR, 'Please provide a valid IPV4 or IPV6 address')
+            return action_result.set_status(phantom.APP_ERROR, "Please provide a valid IPV4 or IPV6 address")
 
         action_result.set_param({phantom.APP_JSON_IP: ip})
 
@@ -209,7 +208,7 @@ class WhoisConnector(BaseConnector):
 
         try:
             obj_whois = IPWhois(ip)
-            whois_response = obj_whois.lookup_whois(asn_methods=['whois', 'dns', 'http'])
+            whois_response = obj_whois.lookup_whois(asn_methods=["whois", "dns", "http"])
         except IPDefinedError as e_defined:
             error_message = self._get_error_message_from_exception(e_defined)
             self.debug_print("Got IPDefinedError exception str: {0}".format(error_message))
@@ -227,36 +226,36 @@ class WhoisConnector(BaseConnector):
         action_result.add_data(whois_response)
 
         summary = action_result.update_summary({})
-        message = ''
+        message = ""
 
         # Create the summary and the message
-        if 'asn_registry' in whois_response:
-            summary.update({WHOIS_JSON_ASN_REGISTRY: whois_response['asn_registry']})
-            message += 'Registry: {0}'.format(summary[WHOIS_JSON_ASN_REGISTRY])
+        if "asn_registry" in whois_response:
+            summary.update({WHOIS_JSON_ASN_REGISTRY: whois_response["asn_registry"]})
+            message += "Registry: {0}".format(summary[WHOIS_JSON_ASN_REGISTRY])
 
-        if 'asn' in whois_response:
-            summary.update({WHOIS_JSON_ASN: whois_response['asn']})
-            message += '\nASN: {0}'.format(summary[WHOIS_JSON_ASN])
+        if "asn" in whois_response:
+            summary.update({WHOIS_JSON_ASN: whois_response["asn"]})
+            message += "\nASN: {0}".format(summary[WHOIS_JSON_ASN])
 
-        if 'asn_country_code' in whois_response:
-            summary.update({WHOIS_JSON_COUNTRY_CODE: whois_response['asn_country_code']})
-            message += '\nCountry: {0}'.format(summary[WHOIS_JSON_COUNTRY_CODE])
+        if "asn_country_code" in whois_response:
+            summary.update({WHOIS_JSON_COUNTRY_CODE: whois_response["asn_country_code"]})
+            message += "\nCountry: {0}".format(summary[WHOIS_JSON_COUNTRY_CODE])
 
-        if 'nets' in whois_response:
-            nets = whois_response['nets']
-            wanted_keys = ['range', 'address']
+        if "nets" in whois_response:
+            nets = whois_response["nets"]
+            wanted_keys = ["range", "address"]
             summary[WHOIS_JSON_NETS] = []
-            message += '\nNets:'
+            message += "\nNets:"
             for net in nets:
                 summary_net = {x: net.get(x) for x in wanted_keys}
                 summary[WHOIS_JSON_NETS].append(summary_net)
-                message += '\nRange: {0}'.format(summary_net['range'])
-                message += '\nAddress: {0}'.format(summary_net['address'])
+                message += "\nRange: {0}".format(summary_net["range"])
+                message += "\nAddress: {0}".format(summary_net["address"])
 
         return action_result.set_status(phantom.APP_SUCCESS, message)
 
     def _is_ip(self, input_ip_address):
-        """ Function that checks given address and returns True if address is valid IPv4 or IPV6 address.
+        """Function that checks given address and returns True if address is valid IPv4 or IPV6 address.
 
         :param input_ip_address: IP address
         :return: status (success/failure)
@@ -278,7 +277,7 @@ class WhoisConnector(BaseConnector):
 
         last_time = self._state.get(WHOIS_JSON_CACHE_UPDATE_TIME)
 
-        if (not last_time):
+        if not last_time:
             return True
 
         try:
@@ -325,8 +324,7 @@ class WhoisConnector(BaseConnector):
 
         domain = ""
         if result.suffix and result.domain:
-            domain = "{0}.{1}".format(result.domain,
-                                      result.suffix)  # pylint: disable=E1101
+            domain = "{0}.{1}".format(result.domain, result.suffix)  # pylint: disable=E1101
         elif result.suffix:
             domain = "{0}".format(result.suffix)  # pylint: disable=E1101
         elif result.domain:
@@ -334,10 +332,10 @@ class WhoisConnector(BaseConnector):
         return domain
 
     def _fetch_whois_info(self, action_result, domain, server):
-        '''
+        """
         This method fetches the whois information for the given domain based on the
         value of the server if provided or by using the default server of the pythonwhois library.
-        '''
+        """
 
         try:
             self.debug_print("Fetching the WHOIS information. Server is: {}".format(server))
@@ -403,9 +401,9 @@ class WhoisConnector(BaseConnector):
 
         # 2. Attempting to fetch the whois information with the server obtained
         # in the output response of the first step above
-        if whois_response.get('contacts') and not whois_response.get('contacts').get('registrant'):
-            if whois_response.get('whois_server') and whois_response.get('whois_server')[0]:
-                whois_response = self._fetch_whois_info(action_result, domain, whois_response.get('whois_server')[0])
+        if whois_response.get("contacts") and not whois_response.get("contacts").get("registrant"):
+            if whois_response.get("whois_server") and whois_response.get("whois_server")[0]:
+                whois_response = self._fetch_whois_info(action_result, domain, whois_response.get("whois_server")[0])
 
                 if whois_response is None:
                     return action_result.get_status()
@@ -427,19 +425,21 @@ class WhoisConnector(BaseConnector):
 
         # Even if the query was successfull the data might not be available
         if self._response_no_data(whois_response, domain):
-            return action_result.set_status(phantom.APP_SUCCESS,
-                                            '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_ERROR_QUERY_RETURNED_NO_CONTACTS_DATA))
+            return action_result.set_status(
+                phantom.APP_SUCCESS, "{}, but, {}.".format(WHOIS_SUCC_QUERY, WHOIS_ERROR_QUERY_RETURNED_NO_CONTACTS_DATA)
+            )
         else:
             # get the registrant
-            if whois_response.get('contacts') and whois_response.get('contacts').get('registrant'):
-                registrant = whois_response['contacts']['registrant']
-                wanted_keys = ['organization', 'name', 'city', 'country']
+            if whois_response.get("contacts") and whois_response.get("contacts").get("registrant"):
+                registrant = whois_response["contacts"]["registrant"]
+                wanted_keys = ["organization", "name", "city", "country"]
                 summary = {x: registrant[x] for x in wanted_keys if x in registrant}
                 action_result.update_summary(self.replace_null_values(summary))
                 action_result.set_status(phantom.APP_SUCCESS)
             else:
-                action_result.set_status(phantom.APP_SUCCESS,
-                                         '{}, but, {}.'.format(WHOIS_SUCC_QUERY, WHOIS_SUCC_QUERY_RETURNED_NO_REGISTRANT_DATA))
+                action_result.set_status(
+                    phantom.APP_SUCCESS, "{}, but, {}.".format(WHOIS_SUCC_QUERY, WHOIS_SUCC_QUERY_RETURNED_NO_REGISTRANT_DATA)
+                )
 
         return phantom.APP_SUCCESS
 
@@ -471,7 +471,7 @@ class WhoisConnector(BaseConnector):
         return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # import simplejson as json
     import pudb
@@ -481,7 +481,7 @@ if __name__ == '__main__':
     with open(sys.argv[1]) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
-        print(json.dumps(in_json, indent=' ' * 4))
+        print(json.dumps(in_json, indent=" " * 4))
 
         connector = WhoisConnector()
         connector.print_progress_message = True
