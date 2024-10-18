@@ -1,2 +1,1 @@
 **Unreleased**
-* updated dependencies in requirements [SOARHELP-3927]
