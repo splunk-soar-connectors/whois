@@ -18,6 +18,7 @@ import datetime
 import ipaddress
 import sys
 import time
+from urllib.parse import urlparse
 
 import phantom.app as phantom
 import pythonwhois
@@ -57,6 +58,18 @@ class WhoisConnector(BaseConnector):
         self._cache_file_path = None
         self._state = {}
         self._update_days = None
+
+    def extract_hostname(self, url):
+        parsed_url = urlparse(url)
+        ip_address = parsed_url.hostname
+        return ip_address
+
+    def is_url(self, url):
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
 
     def _dump_error_log(self, error, message="Exception occurred."):
         self.error_print(message, dump_object=error)
@@ -340,6 +353,12 @@ class WhoisConnector(BaseConnector):
         try:
             self.debug_print("Fetching the WHOIS information. Server is: {}".format(server))
             if server:
+                if self.is_url(server):
+                    self.debug_print("Server value {} is a URL".format(server))
+                    server = self.extract_hostname(server)
+                    self.debug_print("New server value is : {}".format(server))
+                else:
+                    self.debug_print("Server is not a URL")
                 raw_whois_resp = pythonwhois.net.get_whois_raw(domain, server)
                 whois_response = pythonwhois.parse.parse_raw_whois(raw_whois_resp)
             else:
