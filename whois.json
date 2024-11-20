@@ -19,8 +19,8 @@
     "logo_dark": "logo_splunk_dark.svg",
     "latest_tested_versions": [
         "pythonwhois-alt v2.4.6",
-        "ipwhois v1.1.0",
-        "dnspython v1.16.0"
+        "ipwhois v1.3.0",
+        "dnspython v2.6.1"
     ],
     "configuration": {
         "update_days": {
