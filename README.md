@@ -2,11 +2,11 @@
 # WHOIS
 
 Publisher: Splunk  
-Connector Version: 2.2.3  
+Connector Version: 2.2.4  
 Product Vendor: Generic  
 Product Name: Whois  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.2.2  
+Minimum Product Version: 6.3.0  
 
 This app implements investigative actions that query the whois database
 

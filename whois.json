@@ -6,12 +6,12 @@
     "publisher": "Splunk",
     "type": "information",
     "main_module": "whois_connector.py",
-    "app_version": "2.2.3",
+    "app_version": "2.2.4",
     "utctime_updated": "2023-12-12T14:17:49.000000Z",
     "product_vendor": "Generic",
     "product_name": "Whois",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.2.2",
+    "min_phantom_version": "6.3.0",
     "fips_compliant": true,
     "python_version": "3",
     "license": "Copyright (c) 2016-2024 Splunk Inc.",
@@ -19,8 +19,8 @@
     "logo_dark": "logo_splunk_dark.svg",
     "latest_tested_versions": [
         "pythonwhois-alt v2.4.6",
-        "ipwhois v1.1.0",
-        "dnspython v1.16.0"
+        "ipwhois v1.3.0",
+        "dnspython v2.6.1"
     ],
     "configuration": {
         "update_days": {
@@ -710,7 +710,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-75.1.0-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-75.3.0-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
