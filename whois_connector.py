@@ -1,6 +1,6 @@
 # File: whois_connector.py
 #
-# Copyright (c) 2016-2024 Splunk Inc.
+# Copyright (c) 2016-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -359,7 +359,17 @@ class WhoisConnector(BaseConnector):
                     self.debug_print("New server value is : {}".format(server))
                 else:
                     self.debug_print("Server is not a URL")
-                raw_whois_resp = pythonwhois.net.get_whois_raw(domain, server)
+                try:
+                    raw_whois_resp = pythonwhois.net.get_whois_raw(domain, server)
+                except Exception as e:
+                    error_message = self._get_error_message_from_exception(e)
+                    self.debug_print("Failed to connect to whois server: {0}, {1}".format(server, error_message))
+                    whois_response = pythonwhois.get_whois(domain)
+                    if not whois_response:
+                        action_result.set_status(phantom.APP_ERROR, WHOIS_ERROR_QUERY_RETURNED_NO_DATA)
+                        return None
+
+                    return whois_response
                 whois_response = pythonwhois.parse.parse_raw_whois(raw_whois_resp)
             else:
                 whois_response = pythonwhois.get_whois(domain)
