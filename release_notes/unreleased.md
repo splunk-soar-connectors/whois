@@ -1,1 +1,2 @@
 **Unreleased**
+* Made `whois domain` action more resilient to failures to connect to the WhoIs server
