@@ -6,7 +6,7 @@
     "publisher": "Splunk",
     "type": "information",
     "main_module": "whois_connector.py",
-    "app_version": "2.2.5",
+    "app_version": "2.2.6",
     "utctime_updated": "2023-12-12T14:17:49.000000Z",
     "product_vendor": "Generic",
     "product_name": "Whois",
@@ -20,7 +20,7 @@
     "latest_tested_versions": [
         "pythonwhois-alt v2.4.6",
         "ipwhois v1.3.0",
-        "dnspython v2.6.1"
+        "dnspython v2.7.0"
     ],
     "configuration": {
         "update_days": {
@@ -694,7 +694,7 @@
             },
             {
                 "module": "dnspython",
-                "input_file": "wheels/py3/dnspython-2.6.1-py3-none-any.whl"
+                "input_file": "wheels/py3/dnspython-2.7.0-py3-none-any.whl"
             },
             {
                 "module": "ipwhois",
@@ -710,7 +710,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-75.8.0-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-75.8.2-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
