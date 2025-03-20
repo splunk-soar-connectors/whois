@@ -15,17 +15,18 @@ without a valid written license from Splunk Inc. is PROHIBITED.
 -->
 {% extends 'widgets/widget_template.html' %}
 {% load custom_template %}
-
-{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%;
-background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block custom_title_prop %}
+  {% if title_logo %}
+    style="background-size: auto 60%; background-position: 50%;
+    background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
+  {% endif %}
+{% endblock %}
 {% block title1 %}{{ title1 }}{% endblock %}
 {% block title2 %}{{ title2 }}{% endblock %}
-{% block custom_tools %}
-{% endblock %}
-{% block widget_content %} <!-- Main Start Block -->
-
-
-<style>
+{% block custom_tools %}{% endblock %}
+{% block widget_content %}
+  <!-- Main Start Block -->
+  <style>
     .whois a:hover {
         text-decoration: underline;
     }
@@ -80,102 +81,103 @@ background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo
     .whois .overflow-column {
         overflow: auto;
     }
-</style>
-
-<div class="whois" style="overflow: auto; width: 100%; height: 100%; padding-left:10px; padding-right:10px">
+  </style>
+  <div class="whois"
+       style="overflow: auto;
+              width: 100%;
+              height: 100%;
+              padding-left:10px;
+              padding-right:10px">
     <!-- Main Div -->
-
-    {% for result in results %} <!-- loop for each result -->
-    {% if not result.data %}
-    <h4 class="wf-h4-style">No data found</h4>
-    {% else %}
-    {% with admin=result.data.contacts.admin registrant=result.data.contacts.registrant raw=result.data.raw %}
-    {% if not admin and not registrant and not raw %}
-    <h4 class="wf-h4-style">No data found</h4>
-    {% endif %}
-    {% if admin or registrant %}
-    <h4 class="wf-h4-style">Info</h4>
-    <div class="domain_info overflow-column">
-        <table class="phantom-table dataTable">
-            <tr>
-                <th>Domain</th>
-                <th>Status Message</th>
-                <th>Admin City</th>
-                <th>Admin Country</th>
-                <th>Admin Email</th>
-                <th>Admin Name</th>
-                <th>Admin Organization</th>
-                <th>Registrant City</th>
-                <th>Registrant Country</th>
-                <th>Registrant Email</th>
-                <th>Registrant Name</th>
-                <th>Registrant Organization</th>
-                <th>Registrant Phone</th>
-            </tr>
-            <tr>
-                <td>
+    {% for result in results %}
+      <!-- loop for each result -->
+      {% if not result.data %}
+        <h4 class="wf-h4-style">No data found</h4>
+      {% else %}
+        {% with admin=result.data.contacts.admin registrant=result.data.contacts.registrant raw=result.data.raw %}
+          {% if not admin and not registrant and not raw %}<h4 class="wf-h4-style">No data found</h4>{% endif %}
+          {% if admin or registrant %}
+            <h4 class="wf-h4-style">Info</h4>
+            <div class="domain_info overflow-column">
+              <table class="phantom-table dataTable">
+                <tr>
+                  <th>Domain</th>
+                  <th>Status Message</th>
+                  <th>Admin City</th>
+                  <th>Admin Country</th>
+                  <th>Admin Email</th>
+                  <th>Admin Name</th>
+                  <th>Admin Organization</th>
+                  <th>Registrant City</th>
+                  <th>Registrant Country</th>
+                  <th>Registrant Email</th>
+                  <th>Registrant Name</th>
+                  <th>Registrant Organization</th>
+                  <th>Registrant Phone</th>
+                </tr>
+                <tr>
+                  <td>
                     <a href="javascript:;"
-                        onclick="context_menu(this, [{'contains': ['domain', 'url'], 'value':'{{ result.summary.domain }}' }], 0, {{ container.id }}, null, false);">
-                        {{ result.summary.domain }}
-                        &nbsp;
-                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                       onclick="context_menu(this, [{'contains': ['domain', 'url'], 'value':'{{ result.summary.domain }}' }], 0, {{ container.id }}, null, false);">
+                      {{ result.summary.domain }}
+                      &nbsp;
+                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>
-                </td>
-                <td>{{ result.message }}</td>
-                <td>{{ admin.city|default:"None" }}</td>
-                <td>{{ admin.country|default:"None" }}</td>
-                <td>
+                  </td>
+                  <td>{{ result.message }}</td>
+                  <td>{{ admin.city|default:"None" }}</td>
+                  <td>{{ admin.country|default:"None" }}</td>
+                  <td>
                     {% if admin.email %}
-                    <a href="javascript:;"
-                        onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ admin.email }}' }], 0, {{ container.id }}, null, false);">
+                      <a href="javascript:;"
+                         onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ admin.email }}' }], 0, {{ container.id }}, null, false);">
                         {{ admin.email }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                    </a>
+                      </a>
                     {% else %}
-                    None
+                      None
                     {% endif %}
-                </td>
-                <td>{{ admin.name|default:"None" }}</td>
-                <td>{{ admin.organization|default:"None" }}</td>
-                <td>{{ registrant.city|default:"None" }}</td>
-                <td>{{ registrant.country|default:"None" }}</td>
-                <td>
+                  </td>
+                  <td>{{ admin.name|default:"None" }}</td>
+                  <td>{{ admin.organization|default:"None" }}</td>
+                  <td>{{ registrant.city|default:"None" }}</td>
+                  <td>{{ registrant.country|default:"None" }}</td>
+                  <td>
                     {% if registrant.email %}
-                    <a href="javascript:;"
-                        onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ registrant.email }}' }], 0, {{ container.id }}, null, false);">
+                      <a href="javascript:;"
+                         onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ registrant.email }}' }], 0, {{ container.id }}, null, false);">
                         {{ registrant.email }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                    </a>
+                      </a>
                     {% else %}
-                    None
+                      None
                     {% endif %}
-                </td>
-                <td>{{ registrant.name|default:"None" }}</td>
-                <td>{{ registrant.organization|default:"None" }}</td>
-                <td>{{ registrant.phone|default:"None" }}</td>
-            </tr>
-        </table>
-    </div>
-    {% endif %}
-    {% if raw %}
-    <div class="info">
-        <h4 class="wf-h4-style">Raw</h4>
-        <table class="wf-table-vertical">
-            <tr>
-                <td>Raw object</td>
-                <td>{{ raw }}</td>
-            </tr>
-        </table>
-    </div>
-    {% endif %}
-    {% endwith %}
-    {% endif %}
+                  </td>
+                  <td>{{ registrant.name|default:"None" }}</td>
+                  <td>{{ registrant.organization|default:"None" }}</td>
+                  <td>{{ registrant.phone|default:"None" }}</td>
+                </tr>
+              </table>
+            </div>
+          {% endif %}
+          {% if raw %}
+            <div class="info">
+              <h4 class="wf-h4-style">Raw</h4>
+              <table class="wf-table-vertical">
+                <tr>
+                  <td>Raw object</td>
+                  <td>{{ raw }}</td>
+                </tr>
+              </table>
+            </div>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
     {% endfor %}
-</div>
-
-<script>
+  </div>
+  <script>
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": true,
         "bLengthChange": false,
@@ -194,6 +196,5 @@ background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo
     });
     $('.dataTable').DataTable();
 
-</script>
-
+  </script>
 {% endblock %}
