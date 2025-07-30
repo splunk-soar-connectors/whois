@@ -1,8 +1,3 @@
-[comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2016-2025 Splunk Inc."
-[comment]: # ""
-[comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
-[comment]: # ""
 The app uses the tldextract python module while executing the 'whois domain' action. This module
 uses the tld list from publicsuffix.org. The app ships with a tld list, however, it will try to
 update the list the first time it runs and then tries to update it at a regular interval. The
@@ -14,8 +9,8 @@ The user is requested to use CONFIGURE NEW ASSET option to configure a new asset
 
 ## WHOIS Ports Requirements (Based on Standard Guidelines of [IANA ORG](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml) )
 
--   WHOIS(service) TCP(transport protocol) - 43
--   WHOIS(service) UDP(transport protocol) - 43
+- WHOIS(service) TCP(transport protocol) - 43
+- WHOIS(service) UDP(transport protocol) - 43
 
 ## ipwhois
 
