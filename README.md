@@ -47,6 +47,11 @@ Bob Halley.
 This app uses the python requests-file module, which is licensed under the Apache 2.0 License,
 Copyright (c) David Shea.
 
+## charset-normalizer
+
+This app uses the python charset-normalizer module, which is licensed under the MIT License,
+Copyright (c) 2025 TAHRI Ahmed R.
+
 ### Configuration variables
 
 This table lists the configuration variables required to operate WHOIS. These variables are specified when configuring a Whois asset in Splunk SOAR.

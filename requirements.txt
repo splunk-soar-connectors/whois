@@ -1,5 +1,3 @@
-# Freezing urllib3 version because without it the unsupported 2.0 version is
-# installed by default as a sub-dependency
 charset-normalizer==3.4.2
 dnspython==2.7.0
 ipwhois==1.3.0

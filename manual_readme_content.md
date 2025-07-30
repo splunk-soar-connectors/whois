@@ -37,7 +37,6 @@ Bob Halley.
 This app uses the python requests-file module, which is licensed under the Apache 2.0 License,
 Copyright (c) David Shea.
 
-
 ## charset-normalizer
 
 This app uses the python charset-normalizer module, which is licensed under the MIT License,

@@ -41,7 +41,7 @@ ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 def monkey_patched_whois_request(domain, server, port=43):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((server, port))
-    sock.send(("%s\r\n" % domain).encode("utf-8"))
+    sock.send((f"{domain}\r\n").encode())
     buff = b""
     while True:
         data = sock.recv(1024)
