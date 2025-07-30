@@ -37,3 +37,8 @@ Version: 2.5.9
 License: MIT
 License: WTFPL
 Copyright 2020 Michael Ramsey <mike@hackerdise.me>
+
+Library: charset-normalizer
+Version: 3.4.2
+License: MIT
+Copyright (c) 2025 TAHRI Ahmed R.
