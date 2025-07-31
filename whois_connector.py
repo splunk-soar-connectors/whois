@@ -53,7 +53,7 @@ def monkey_patched_whois_request(domain, server, port=43):
     return buff.decode(encoding)
 
 
-# monkey patching internal pythonwhois method that throws decoding error
+# monkey-patching internal pythonwhois method that throws decoding error
 pythonwhois.net.whois_request = monkey_patched_whois_request
 
 
