@@ -16,6 +16,7 @@
 # Phantom imports
 import datetime
 import ipaddress
+import socket
 import sys
 import time
 from urllib.parse import urlparse
@@ -24,6 +25,7 @@ import phantom.app as phantom
 import pythonwhois
 import simplejson as json
 import tldextract
+from charset_normalizer import detect
 from ipwhois import IPDefinedError, IPWhois
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
@@ -34,6 +36,25 @@ from whois_consts import *
 
 TLD_LIST_CACHE_FILE_NAME = "public_suffix_list.dat"
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+
+def monkey_patched_whois_request(domain, server, port=43):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((server, port))
+    sock.send((f"{domain}\r\n").encode())
+    buff = b""
+    while True:
+        data = sock.recv(1024)
+        if len(data) == 0:
+            break
+        buff += data
+
+    encoding = detect(buff)["encoding"]
+    return buff.decode(encoding)
+
+
+# monkey patching internal pythonwhois method that throws decoding error
+pythonwhois.net.whois_request = monkey_patched_whois_request
 
 
 def _json_fallback(obj):
@@ -489,7 +510,6 @@ class WhoisConnector(BaseConnector):
 
 
 if __name__ == "__main__":
-    # import simplejson as json
     import pudb
 
     pudb.set_trace()
