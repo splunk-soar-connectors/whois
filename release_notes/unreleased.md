@@ -1,3 +1,1 @@
 **Unreleased**
-* pythonwhois.net.whois_request was monkey-patched to fix encoding issues
-* updated pip dependencies for python 3.13
