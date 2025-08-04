@@ -1,1 +1,2 @@
 **Unreleased**
+* Remove Python 3.13 from Python version, dependency ipwhois 1.3.0 does not have 3.13 support
