@@ -1,9 +1,9 @@
 # WHOIS
 
-Publisher: Splunk \
-Connector Version: 2.2.10 \
-Product Vendor: Generic \
-Product Name: Whois \
+Publisher: Splunk <br>
+Connector Version: 2.2.10 <br>
+Product Vendor: Generic <br>
+Product Name: Whois <br>
 Minimum Product Version: 6.3.0
 
 This app implements investigative actions that query the whois database
@@ -62,15 +62,15 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the configuration for connectivity \
-[whois domain](#action-whois-domain) - Execute a whois lookup on the given domain \
+[test connectivity](#action-test-connectivity) - Validate the configuration for connectivity <br>
+[whois domain](#action-whois-domain) - Execute a whois lookup on the given domain <br>
 [whois ip](#action-whois-ip) - Execute a whois lookup on the given IP
 
 ## action: 'test connectivity'
 
 Validate the configuration for connectivity
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -85,7 +85,7 @@ No Output
 
 Execute a whois lookup on the given domain
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 This action accepts URLs also. It will extract the domain name from the URL before making the action query. It also tries to strip out the subdomain if any.
@@ -159,7 +159,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Execute a whois lookup on the given IP
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters

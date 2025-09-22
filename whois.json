@@ -706,7 +706,7 @@
             },
             {
                 "module": "requests_file",
-                "input_file": "wheels/shared/requests_file-1.4.2-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/requests_file-1.5.1-py2.py3-none-any.whl"
             },
             {
                 "module": "setuptools",
@@ -742,7 +742,7 @@
             },
             {
                 "module": "requests_file",
-                "input_file": "wheels/shared/requests_file-1.4.2-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/requests_file-1.5.1-py2.py3-none-any.whl"
             },
             {
                 "module": "setuptools",
