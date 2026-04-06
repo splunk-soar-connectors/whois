@@ -1,6 +1,6 @@
 # File: whois_connector.py
 #
-# Copyright (c) 2016-2025 Splunk Inc.
+# Copyright (c) 2016-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,11 +27,17 @@ import simplejson as json
 import tldextract
 from charset_normalizer import detect
 from ipwhois import IPDefinedError, IPWhois
+from ipwhois.nir import NIR_WHOIS
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 # THIS Connector imports
 from whois_consts import *
+
+
+# Workaround for https://github.com/secynic/ipwhois/issues/342
+# Update the URL for KRNIC. Lookups for Korean IPs will fail without this.
+NIR_WHOIS["krnic"]["url"] = "https://whois.kr/eng/whois.jsc"
 
 
 TLD_LIST_CACHE_FILE_NAME = "public_suffix_list.dat"
