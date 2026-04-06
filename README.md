@@ -1,7 +1,7 @@
 # WHOIS
 
 Publisher: Splunk <br>
-Connector Version: 2.2.11 <br>
+Connector Version: 2.2.12 <br>
 Product Vendor: Generic <br>
 Product Name: Whois <br>
 Minimum Product Version: 6.3.0

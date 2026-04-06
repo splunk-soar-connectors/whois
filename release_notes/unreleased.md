@@ -1,2 +1,1 @@
 **Unreleased**
-* Patch the URL for KRNIC, fixing lookups for Korean IPs. Works around an [existing issue](https://github.com/secynic/ipwhois/issues/342) in `ipwhois` [PAPP-37759]
