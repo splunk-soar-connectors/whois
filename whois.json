@@ -14,7 +14,7 @@
     "min_phantom_version": "6.3.0",
     "fips_compliant": true,
     "python_version": "3.9, 3.13",
-    "license": "Copyright (c) 2016-2025 Splunk Inc.",
+    "license": "Copyright (c) 2016-2026 Splunk Inc.",
     "logo": "logo_splunk.svg",
     "logo_dark": "logo_splunk_dark.svg",
     "latest_tested_versions": [
@@ -710,7 +710,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-80.9.0-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-82.0.1-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
@@ -746,7 +746,7 @@
             },
             {
                 "module": "setuptools",
-                "input_file": "wheels/py3/setuptools-80.9.0-py3-none-any.whl"
+                "input_file": "wheels/py3/setuptools-82.0.1-py3-none-any.whl"
             },
             {
                 "module": "tldextract",
