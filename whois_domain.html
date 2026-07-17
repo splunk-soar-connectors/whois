@@ -118,7 +118,7 @@ without a valid written license from Splunk Inc. is PROHIBITED.
                 <tr>
                   <td>
                     <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['domain', 'url'], 'value':'{{ result.summary.domain }}' }], 0, {{ container.id }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['domain', 'url'], 'value':'{{ result.summary.domain|escapejs }}' }], 0, {{ container.id }}, null, false);">
                       {{ result.summary.domain }}
                       &nbsp;
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -130,7 +130,7 @@ without a valid written license from Splunk Inc. is PROHIBITED.
                   <td>
                     {% if admin.email %}
                       <a href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ admin.email }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ admin.email|escapejs }}' }], 0, {{ container.id }}, null, false);">
                         {{ admin.email }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -146,7 +146,7 @@ without a valid written license from Splunk Inc. is PROHIBITED.
                   <td>
                     {% if registrant.email %}
                       <a href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ registrant.email }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['email'], 'value':'{{ registrant.email|escapejs }}' }], 0, {{ container.id }}, null, false);">
                         {{ registrant.email }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>

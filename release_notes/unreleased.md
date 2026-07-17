@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Update development tooling.
+* Escape WHOIS values rendered in context-menu JavaScript.
