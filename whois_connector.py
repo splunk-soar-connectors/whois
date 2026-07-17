@@ -215,7 +215,7 @@ class WhoisConnector(BaseConnector):
             error_message = self._get_error_message_from_exception(e_defined)
             self.debug_print(f"Got IPDefinedError exception str: {error_message}")
             self.save_progress("Test Connectivity Failed")
-            return action_result.set_status(phantom.APP_SUCCESS, error_message)
+            return action_result.set_status(phantom.APP_ERROR, error_message)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             self.debug_print(f"Got exception: type: {type(e).__name__}, str: {error_message}")
@@ -255,7 +255,7 @@ class WhoisConnector(BaseConnector):
         except IPDefinedError as e_defined:
             error_message = self._get_error_message_from_exception(e_defined)
             self.debug_print(f"Got IPDefinedError exception str: {error_message}")
-            return action_result.set_status(phantom.APP_SUCCESS, error_message)
+            return action_result.set_status(phantom.APP_ERROR, error_message)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             self.debug_print(f"Got exception: type: {type(e).__name__}, str: {error_message}")

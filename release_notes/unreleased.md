@@ -2,3 +2,4 @@
 
 * Escape WHOIS values rendered in context-menu JavaScript.
 * Limit and time out WHOIS server responses.
+* Report reserved-IP WHOIS lookup failures as errors.
