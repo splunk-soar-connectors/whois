@@ -42,21 +42,29 @@ NIR_WHOIS["krnic"]["url"] = "https://whois.kr/eng/whois.jsc"
 
 TLD_LIST_CACHE_FILE_NAME = "public_suffix_list.dat"
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+WHOIS_SOCKET_TIMEOUT_SECONDS = 30
+WHOIS_MAX_RESPONSE_BYTES = 512 * 1024
 
 
 def monkey_patched_whois_request(domain, server, port=43):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((server, port))
-    sock.send((f"{domain}\r\n").encode())
-    buff = b""
-    while True:
-        data = sock.recv(1024)
-        if len(data) == 0:
-            break
-        buff += data
+    try:
+        sock.settimeout(WHOIS_SOCKET_TIMEOUT_SECONDS)
+        sock.connect((server, port))
+        sock.sendall((f"{domain}\r\n").encode())
+        buff = bytearray()
+        while len(buff) < WHOIS_MAX_RESPONSE_BYTES:
+            data = sock.recv(min(1024, WHOIS_MAX_RESPONSE_BYTES - len(buff)))
+            if not data:
+                break
+            buff.extend(data)
+        if len(buff) == WHOIS_MAX_RESPONSE_BYTES:
+            raise ValueError(f"WHOIS response exceeds {WHOIS_MAX_RESPONSE_BYTES} byte limit")
+    finally:
+        sock.close()
 
     encoding = detect(buff)["encoding"]
-    return buff.decode(encoding)
+    return bytes(buff).decode(encoding)
 
 
 # monkey patching internal pythonwhois method that throws decoding error
@@ -207,7 +215,7 @@ class WhoisConnector(BaseConnector):
             error_message = self._get_error_message_from_exception(e_defined)
             self.debug_print(f"Got IPDefinedError exception str: {error_message}")
             self.save_progress("Test Connectivity Failed")
-            return action_result.set_status(phantom.APP_SUCCESS, error_message)
+            return action_result.set_status(phantom.APP_ERROR, error_message)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             self.debug_print(f"Got exception: type: {type(e).__name__}, str: {error_message}")
@@ -247,7 +255,7 @@ class WhoisConnector(BaseConnector):
         except IPDefinedError as e_defined:
             error_message = self._get_error_message_from_exception(e_defined)
             self.debug_print(f"Got IPDefinedError exception str: {error_message}")
-            return action_result.set_status(phantom.APP_SUCCESS, error_message)
+            return action_result.set_status(phantom.APP_ERROR, error_message)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             self.debug_print(f"Got exception: type: {type(e).__name__}, str: {error_message}")
