@@ -180,6 +180,10 @@ class WhoisConnector(BaseConnector):
     def _response_no_data(self, response, obj):
         contacts = response["contacts"]
 
+        # Parsed contacts take precedence over untrusted marker text in the raw response.
+        if any(contacts.get(contact_type) for contact_type in ("admin", "tech", "registrant", "billing")):
+            return False
+
         # First check if the raw data contains any info
         raw_response = phantom.get_value(response, "raw")
         if raw_response:
@@ -191,11 +195,7 @@ class WhoisConnector(BaseConnector):
                     self.debug_print("Matched no data string. No match for domain")
                     return True
 
-        # Check if none of the data that we need is present or not
-        if (not contacts.get("admin")) and (not contacts.get("tech")) and (not contacts.get("registrant")) and (not contacts.get("billing")):
-            return True
-
-        return False
+        return True
 
     def _handle_test_connectivity(self, param):
         ip = "1.1.1.1"
