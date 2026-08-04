@@ -16,6 +16,7 @@
 # Phantom imports
 import datetime
 import ipaddress
+import os
 import socket
 import sys
 import time
@@ -163,6 +164,7 @@ class WhoisConnector(BaseConnector):
             self._state = {"app_version": self.get_app_json().get("app_version")}
         config = self.get_config()
 
+        self._cache_file_path = os.path.join(self.get_state_dir(), f"{self.get_asset_id()}_{TLD_LIST_CACHE_FILE_NAME}")
         self._update_days = config["update_days"]
         status, self._update_days = self._validate_integer(self, self._update_days, "update_days")
         if phantom.is_fail(status):
@@ -359,8 +361,7 @@ class WhoisConnector(BaseConnector):
 
         result = extract(hostname)
 
-        if should_update:
-            # Set the updated time
+        if should_update and os.path.isfile(self._cache_file_path):
             self._state[WHOIS_JSON_CACHE_UPDATE_TIME] = datetime.datetime.utcnow().strftime(ISO_TIME_FORMAT)
 
         domain = ""
