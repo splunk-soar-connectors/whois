@@ -392,12 +392,11 @@ class WhoisConnector(BaseConnector):
                 except Exception as e:
                     error_message = self._get_error_message_from_exception(e)
                     self.debug_print(f"Failed to connect to whois server: {server}, {error_message}")
-                    whois_response = pythonwhois.get_whois(domain)
-                    if not whois_response:
-                        action_result.set_status(phantom.APP_ERROR, WHOIS_ERROR_QUERY_RETURNED_NO_DATA)
-                        return None
-
-                    return whois_response
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        f"Failed to query the configured WHOIS server '{server}': {error_message}",
+                    )
+                    return None
                 whois_response = pythonwhois.parse.parse_raw_whois(raw_whois_resp)
             else:
                 whois_response = pythonwhois.get_whois(domain)

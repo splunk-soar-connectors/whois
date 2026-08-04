@@ -29,6 +29,12 @@
             "order": 0,
             "default": 14,
             "required": true
+        },
+        "server": {
+            "description": "WHOIS server IP, hostname, or URL",
+            "data_type": "string",
+            "order": 1,
+            "required": false
         }
     },
     "actions": [

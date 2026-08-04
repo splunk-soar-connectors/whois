@@ -59,6 +59,7 @@ This table lists the configuration variables required to operate WHOIS. These va
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **update_days** | required | numeric | Update the tld list once every N days |
+**server** | optional | string | WHOIS server IP, hostname, or URL |
 
 ### Supported Actions
 
