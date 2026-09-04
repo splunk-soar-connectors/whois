@@ -41,7 +41,7 @@ from whois_consts import *
 NIR_WHOIS["krnic"]["url"] = "https://whois.kr/eng/whois.jsc"
 
 
-TLD_LIST_CACHE_FILE_NAME = "public_suffix_list.dat"
+TLD_LIST_CACHE_DIR_NAME = "public_suffix_list"
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 WHOIS_SOCKET_TIMEOUT_SECONDS = 30
 WHOIS_MAX_RESPONSE_BYTES = 512 * 1024
@@ -90,7 +90,7 @@ class WhoisConnector(BaseConnector):
         super().__init__()
 
         self._state_file_path = None
-        self._cache_file_path = None
+        self._cache_dir_path = None
         self._state = {}
         self._update_days = None
 
@@ -164,7 +164,7 @@ class WhoisConnector(BaseConnector):
             self._state = {"app_version": self.get_app_json().get("app_version")}
         config = self.get_config()
 
-        self._cache_file_path = os.path.join(self.get_state_dir(), f"{self.get_asset_id()}_{TLD_LIST_CACHE_FILE_NAME}")
+        self._cache_dir_path = os.path.join(self.get_state_dir(), f"{self.get_asset_id()}_{TLD_LIST_CACHE_DIR_NAME}")
         self._update_days = config["update_days"]
         status, self._update_days = self._validate_integer(self, self._update_days, "update_days")
         if phantom.is_fail(status):
@@ -350,9 +350,9 @@ class WhoisConnector(BaseConnector):
         try:
             if should_update:
                 self.debug_print("Will Update tld list on the current call")
-                extract = tldextract.TLDExtract(cache_file=self._cache_file_path)
+                extract = tldextract.TLDExtract(cache_dir=self._cache_dir_path)
             else:
-                extract = tldextract.TLDExtract(cache_file=self._cache_file_path, suffix_list_urls=None)
+                extract = tldextract.TLDExtract(cache_dir=self._cache_dir_path, suffix_list_urls=())
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             self.debug_print(f"tldextract failed: {error_message}")
@@ -361,7 +361,7 @@ class WhoisConnector(BaseConnector):
 
         result = extract(hostname)
 
-        if should_update and os.path.isfile(self._cache_file_path):
+        if should_update and self._cache_has_entries():
             self._state[WHOIS_JSON_CACHE_UPDATE_TIME] = datetime.datetime.utcnow().strftime(ISO_TIME_FORMAT)
 
         domain = ""
@@ -372,6 +372,9 @@ class WhoisConnector(BaseConnector):
         elif result.domain:
             domain = f"{result.domain}"  # pylint: disable=E1101
         return domain
+
+    def _cache_has_entries(self):
+        return any(file_name.endswith(".tldextract.json") for _, _, file_names in os.walk(self._cache_dir_path) for file_name in file_names)
 
     def _fetch_whois_info(self, action_result, domain, server):
         """
