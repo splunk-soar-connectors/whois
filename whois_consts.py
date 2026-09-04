@@ -34,6 +34,7 @@ WHOIS_JSON_NETS = "nets"
 WHOIS_JSON_SUBDOMAINS = "subdomains"
 WHOIS_JSON_CACHE_UPDATE_TIME = "cache_update_time"
 WHOIS_JSON_CACHE_EXP_DAYS = "update_days"
+WHOIS_JSON_ALLOW_PUBLIC_FALLBACK = "allow_public_fallback"
 
 # Constants relating to '_get_error_message_from_exception'
 ERROR_MESSAGE_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"

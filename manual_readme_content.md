@@ -3,6 +3,9 @@ uses the tld list from publicsuffix.org. The app ships with a tld list, however,
 update the list the first time it runs and then tries to update it at a regular interval. The
 interval is set in the app config.
 
+When a server is configured, fallback to public WHOIS servers is disabled by default and can be
+enabled with the `allow_public_fallback` asset setting.
+
 This app will ignore the HTTP_PROXY and HTTPS_PROXY environment variables.
 
 The user is requested to use CONFIGURE NEW ASSET option to configure a new asset.

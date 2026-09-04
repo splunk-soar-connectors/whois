@@ -93,6 +93,7 @@ class WhoisConnector(BaseConnector):
         self._cache_dir_path = None
         self._state = {}
         self._update_days = None
+        self._allow_public_fallback = False
 
     def extract_hostname(self, url):
         parsed_url = urlparse(url)
@@ -166,6 +167,7 @@ class WhoisConnector(BaseConnector):
 
         self._cache_dir_path = os.path.join(self.get_state_dir(), f"{self.get_asset_id()}_{TLD_LIST_CACHE_DIR_NAME}")
         self._update_days = config["update_days"]
+        self._allow_public_fallback = config.get(WHOIS_JSON_ALLOW_PUBLIC_FALLBACK, False)
         status, self._update_days = self._validate_integer(self, self._update_days, "update_days")
         if phantom.is_fail(status):
             return self.get_status()
@@ -396,6 +398,14 @@ class WhoisConnector(BaseConnector):
                 except Exception as e:
                     error_message = self._get_error_message_from_exception(e)
                     self.debug_print(f"Failed to connect to whois server: {server}, {error_message}")
+                    if self._allow_public_fallback:
+                        self.debug_print("Configured WHOIS server failed; trying public WHOIS fallback")
+                        whois_response = pythonwhois.get_whois(domain)
+                        if not whois_response:
+                            action_result.set_status(phantom.APP_ERROR, WHOIS_ERROR_QUERY_RETURNED_NO_DATA)
+                            return None
+
+                        return whois_response
                     action_result.set_status(
                         phantom.APP_ERROR,
                         f"Failed to query the configured WHOIS server '{server}': {error_message}",

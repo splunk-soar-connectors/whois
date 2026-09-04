@@ -35,6 +35,13 @@
             "data_type": "string",
             "order": 1,
             "required": false
+        },
+        "allow_public_fallback": {
+            "description": "Allow public WHOIS fallback when a configured server cannot be queried",
+            "data_type": "boolean",
+            "order": 2,
+            "default": false,
+            "required": false
         }
     },
     "actions": [
