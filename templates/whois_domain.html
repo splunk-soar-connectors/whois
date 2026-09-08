@@ -84,7 +84,7 @@ governing permissions and limitations under the License.
               <tr>
                 <td>
                   <a href="javascript:;"
-                     onclick='context_menu(this, [{"contains": ["domain", "url"], "value": {{ result.domain|to_json|safe }} }], 0, {{ container }}, null, false);'>
+                     onclick='context_menu(this, [{"contains": ["domain", "url"], "value": {{ result.domain|to_json }} }], 0, {{ container }}, null, false);'>
                     {{ result.domain }}
                     <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                   </a>
@@ -95,7 +95,7 @@ governing permissions and limitations under the License.
                 <td>
                   {% if admin.email %}
                     <a href="javascript:;"
-                       onclick='context_menu(this, [{"contains": ["email"], "value": {{ admin.email|to_json|safe }} }], 0, {{ container }}, null, false);'>
+                       onclick='context_menu(this, [{"contains": ["email"], "value": {{ admin.email|to_json }} }], 0, {{ container }}, null, false);'>
                       {{ admin.email }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>
@@ -110,7 +110,7 @@ governing permissions and limitations under the License.
                 <td>
                   {% if registrant.email %}
                     <a href="javascript:;"
-                       onclick='context_menu(this, [{"contains": ["email"], "value": {{ registrant.email|to_json|safe }} }], 0, {{ container }}, null, false);'>
+                       onclick='context_menu(this, [{"contains": ["email"], "value": {{ registrant.email|to_json }} }], 0, {{ container }}, null, false);'>
                       {{ registrant.email }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>

@@ -58,3 +58,50 @@ def test_whois_domain_template_renders_sdk_context():
     assert "example.com" in rendered
     assert "admin@example.com" in rendered
     assert "WHOIS data" in rendered
+
+
+def test_whois_domain_template_escapes_context_menu_values():
+    templates = Path(__file__).parent.parent / "templates"
+    environment = Environment(
+        loader=ChoiceLoader(
+            [
+                FileSystemLoader(templates),
+                DictLoader(
+                    {
+                        "widgets/widget_template.html": (
+                            "{% block widget_content %}{% endblock %}"
+                        )
+                    }
+                ),
+            ]
+        ),
+        autoescape=True,
+    )
+    environment.filters["to_json"] = json.dumps
+    template = environment.get_template("whois_domain.html")
+
+    rendered = template.render(
+        container=42,
+        results=[
+            {
+                "domain": "example.com');alert(document.domain);//",
+                "message": "",
+                "data": {
+                    "contacts": {
+                        "admin": {"email": "x');alert(document.domain);//@example.com"},
+                        "registrant": {
+                            "email": "owner');alert(document.domain);//@example.com"
+                        },
+                    },
+                    "raw": None,
+                },
+            }
+        ],
+    )
+
+    assert "example.com');alert" not in rendered
+    assert "x');alert" not in rendered
+    assert "owner');alert" not in rendered
+    assert "example.com&#39;);alert" in rendered
+    assert "x&#39;);alert" in rendered
+    assert "owner&#39;);alert" in rendered
