@@ -16,6 +16,7 @@ from types import SimpleNamespace
 
 import pytest
 from pydantic import ValidationError
+from soar_sdk.compat import MIN_PHANTOM_VERSION, PythonVersion
 from soar_sdk.exceptions import ActionFailure
 
 from src.app import Asset, app
@@ -37,9 +38,9 @@ class FakeSoar:
         self.summary = summary
 
 
-def test_asset_preserves_runtime_floor_and_fallback_default():
-    assert app.app_meta_info["python_version"] == "3.13"
-    assert app.app_meta_info["min_phantom_version"] == "7.1.1"
+def test_asset_uses_sdk_runtime_defaults_and_preserves_fallback_default():
+    assert app.app_meta_info["python_version"] == PythonVersion.all_csv()
+    assert app.app_meta_info["min_phantom_version"] == MIN_PHANTOM_VERSION
     asset = Asset(update_days=14)
     assert asset.server is None
     assert asset.allow_public_fallback is False

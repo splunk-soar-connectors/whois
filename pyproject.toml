@@ -4,7 +4,7 @@ version = "2.2.13"
 description = "This app implements investigative actions that query the whois database"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-requires-python = ">=3.13, <3.14"
+requires-python = ">=3.13, <3.15"
 authors = []
 dependencies = [
     "charset-normalizer==3.4.2",
@@ -41,9 +41,14 @@ environments = [
     "sys_platform == 'linux' and platform_machine == 'aarch64' and python_version == '3.13'",
     "sys_platform == 'darwin' and platform_machine == 'x86_64' and python_version == '3.13'",
     "sys_platform == 'darwin' and platform_machine == 'arm64' and python_version == '3.13'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64' and python_version == '3.14'",
+    "sys_platform == 'linux' and platform_machine == 'aarch64' and python_version == '3.14'",
+    "sys_platform == 'darwin' and platform_machine == 'x86_64' and python_version == '3.14'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64' and python_version == '3.14'",
 ]
 required-environments = [
     "sys_platform == 'linux' and platform_machine == 'x86_64' and python_version == '3.13'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64' and python_version == '3.14'",
 ]
 
 [tool.pytest.ini_options]

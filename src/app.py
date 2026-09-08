@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pydantic import field_validator
-from soar_sdk.abstract import SOARClient
 from soar_sdk.app import App
 from soar_sdk.asset import AssetField, BaseAsset, FieldCategory
 from soar_sdk.exceptions import ActionFailure, AssetMisconfiguration
@@ -68,16 +67,13 @@ app = App(
     product_name="Whois",
     publisher="Splunk",
     appid="e6723c2e-06ef-415a-8098-62c46c1cb71f",
-    python_version="3.13",
-    min_phantom_version="7.1.1",
     fips_compliant=True,
     asset_cls=Asset,
 )
 
 
 @app.test_connectivity()
-def test_connectivity(soar: SOARClient, asset: Asset) -> None:
-    del soar, asset
+def test_connectivity() -> None:
     logger.progress("Querying...")
     try:
         lookup_ip("1.1.1.1")

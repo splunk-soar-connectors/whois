@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 2.2.13 <br>
 Product Vendor: Generic <br>
 Product Name: Whois <br>
-Minimum Product Version: 7.1.1
+Minimum Product Version: 7.0.0
 
 This app implements investigative actions that query the whois database
 
