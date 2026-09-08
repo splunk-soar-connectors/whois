@@ -2,7 +2,8 @@
 name = "whois"
 version = "2.2.13"
 description = "This app implements investigative actions that query the whois database"
-license = "Copyright (c) 2016-2026 Splunk Inc."
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.13, <3.14"
 authors = []
 dependencies = [
