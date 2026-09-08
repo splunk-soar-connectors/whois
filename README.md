@@ -11,7 +11,8 @@ This app implements investigative actions that query the whois database
 The app uses the tldextract python module while executing the 'whois domain' action. This module
 uses the tld list from publicsuffix.org. The app ships with a tld list, however, it will try to
 update the list the first time it runs and then tries to update it at a regular interval. The
-interval is set in the app config.
+interval is set in the app config. The refreshed list is stored in per-asset state and only
+materialized in a temporary file for the duration of an action.
 
 When a server is configured, fallback to public WHOIS servers is disabled by default and can be
 enabled with the `allow_public_fallback` asset setting.

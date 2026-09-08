@@ -14,16 +14,21 @@
 # and limitations under the License.
 #
 # Phantom imports
+import base64
 import datetime
+import gzip
 import ipaddress
-import os
+import pkgutil
 import socket
 import sys
+import tempfile
 import time
+from pathlib import Path
 from urllib.parse import urlparse
 
 import phantom.app as phantom
 import pythonwhois
+import requests
 import simplejson as json
 import tldextract
 from charset_normalizer import detect
@@ -41,10 +46,15 @@ from whois_consts import *
 NIR_WHOIS["krnic"]["url"] = "https://whois.kr/eng/whois.jsc"
 
 
-TLD_LIST_CACHE_DIR_NAME = "public_suffix_list"
 ISO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 WHOIS_SOCKET_TIMEOUT_SECONDS = 30
 WHOIS_MAX_RESPONSE_BYTES = 512 * 1024
+TLD_LIST_URLS = (
+    "https://publicsuffix.org/list/public_suffix_list.dat",
+    "https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat",
+)
+TLD_LIST_REQUEST_TIMEOUT_SECONDS = 30
+TLD_LIST_MAX_BYTES = 2 * 1024 * 1024
 
 
 def monkey_patched_whois_request(domain, server, port=43):
@@ -90,7 +100,6 @@ class WhoisConnector(BaseConnector):
         super().__init__()
 
         self._state_file_path = None
-        self._cache_dir_path = None
         self._state = {}
         self._update_days = None
         self._allow_public_fallback = False
@@ -165,7 +174,6 @@ class WhoisConnector(BaseConnector):
             self._state = {"app_version": self.get_app_json().get("app_version")}
         config = self.get_config()
 
-        self._cache_dir_path = os.path.join(self.get_state_dir(), f"{self.get_asset_id()}_{TLD_LIST_CACHE_DIR_NAME}")
         self._update_days = config["update_days"]
         self._allow_public_fallback = config.get(WHOIS_JSON_ALLOW_PUBLIC_FALLBACK, False)
         status, self._update_days = self._validate_integer(self, self._update_days, "update_days")
@@ -321,6 +329,9 @@ class WhoisConnector(BaseConnector):
         return True
 
     def _should_update_cache(self):
+        if not self._state.get(WHOIS_JSON_CACHE_DATA):
+            return True
+
         last_time = self._state.get(WHOIS_JSON_CACHE_UPDATE_TIME)
 
         if not last_time:
@@ -345,26 +356,89 @@ class WhoisConnector(BaseConnector):
 
         return False
 
-    def _get_domain(self, hostname):
-        extract = None
+    def _load_cached_suffix_list(self):
+        encoded_suffix_list = self._state.get(WHOIS_JSON_CACHE_DATA)
+        if not encoded_suffix_list:
+            return None
 
-        should_update = self._should_update_cache()
+        try:
+            compressed_suffix_list = base64.b64decode(encoded_suffix_list, validate=True)
+            suffix_list = gzip.decompress(compressed_suffix_list).decode("utf-8")
+        except (TypeError, ValueError, OSError, UnicodeDecodeError) as e:
+            self.debug_print(f"Unable to load the cached public suffix list: {e!s}")
+            return None
+
+        if not suffix_list:
+            self.debug_print("The cached public suffix list is empty")
+            return None
+        if len(suffix_list.encode("utf-8")) > TLD_LIST_MAX_BYTES:
+            self.debug_print("The cached Public Suffix List exceeds the size limit")
+            return None
+
+        return suffix_list
+
+    def _fetch_suffix_list(self):
+        for url in TLD_LIST_URLS:
+            try:
+                response = requests.get(url, timeout=TLD_LIST_REQUEST_TIMEOUT_SECONDS)
+                response.raise_for_status()
+                if len(response.content) > TLD_LIST_MAX_BYTES:
+                    raise ValueError("Public Suffix List exceeds the size limit")
+                return response.content.decode("utf-8")
+            except Exception as e:
+                self.debug_print(f"Unable to fetch the Public Suffix List from {url}: {e!s}")
+
+        raise RuntimeError("Unable to fetch the Public Suffix List from all configured URLs")
+
+    def _get_bundled_suffix_list(self):
+        suffix_list = pkgutil.get_data("tldextract", ".tld_set_snapshot")
+        if suffix_list is None:
+            raise RuntimeError("The tldextract Public Suffix List snapshot is unavailable")
+        return suffix_list.decode("utf-8")
+
+    def _extract_with_suffix_list(self, hostname, suffix_list):
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".dat") as suffix_file:
+            suffix_file.write(suffix_list)
+            suffix_file.flush()
+            extract = tldextract.TLDExtract(
+                cache_dir=None,
+                suffix_list_urls=(Path(suffix_file.name).resolve().as_uri(),),
+                fallback_to_snapshot=False,
+            )
+            return extract(hostname)
+
+    def _cache_suffix_list(self, suffix_list):
+        compressed_suffix_list = gzip.compress(suffix_list.encode("utf-8"), mtime=0)
+        encoded_suffix_list = base64.b64encode(compressed_suffix_list).decode("ascii")
+        self._state[WHOIS_JSON_CACHE_DATA] = encoded_suffix_list
+        self._state[WHOIS_JSON_CACHE_UPDATE_TIME] = datetime.datetime.utcnow().strftime(ISO_TIME_FORMAT)
+
+    def _get_domain(self, hostname):
+        cached_suffix_list = self._load_cached_suffix_list()
+        should_update = self._should_update_cache() or cached_suffix_list is None
+
         try:
             if should_update:
                 self.debug_print("Will Update tld list on the current call")
-                extract = tldextract.TLDExtract(cache_dir=self._cache_dir_path)
+                try:
+                    suffix_list = self._fetch_suffix_list()
+                    cache_suffix_list = True
+                except Exception as e:
+                    self.debug_print(f"Unable to refresh the Public Suffix List: {e!s}")
+                    suffix_list = cached_suffix_list or self._get_bundled_suffix_list()
+                    cache_suffix_list = cached_suffix_list is None
             else:
-                extract = tldextract.TLDExtract(cache_dir=self._cache_dir_path, suffix_list_urls=())
+                suffix_list = cached_suffix_list
+                cache_suffix_list = False
+
+            result = self._extract_with_suffix_list(hostname, suffix_list)
+            if cache_suffix_list:
+                self._cache_suffix_list(suffix_list)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             self.debug_print(f"tldextract failed: {error_message}")
             # The caller of this function has a try..except for this one
             raise
-
-        result = extract(hostname)
-
-        if should_update and self._cache_has_entries():
-            self._state[WHOIS_JSON_CACHE_UPDATE_TIME] = datetime.datetime.utcnow().strftime(ISO_TIME_FORMAT)
 
         domain = ""
         if result.suffix and result.domain:
@@ -374,9 +448,6 @@ class WhoisConnector(BaseConnector):
         elif result.domain:
             domain = f"{result.domain}"  # pylint: disable=E1101
         return domain
-
-    def _cache_has_entries(self):
-        return any(file_name.endswith(".tldextract.json") for _, _, file_names in os.walk(self._cache_dir_path) for file_name in file_names)
 
     def _fetch_whois_info(self, action_result, domain, server):
         """

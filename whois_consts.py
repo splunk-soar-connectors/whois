@@ -33,6 +33,7 @@ WHOIS_JSON_COUNTRY_CODE = "country_code"
 WHOIS_JSON_NETS = "nets"
 WHOIS_JSON_SUBDOMAINS = "subdomains"
 WHOIS_JSON_CACHE_UPDATE_TIME = "cache_update_time"
+WHOIS_JSON_CACHE_DATA = "cache_data"
 WHOIS_JSON_CACHE_EXP_DAYS = "update_days"
 WHOIS_JSON_ALLOW_PUBLIC_FALLBACK = "allow_public_fallback"
 
