@@ -15,6 +15,7 @@ import itertools
 import time
 from collections.abc import Iterator
 
+from pydantic import field_validator
 from soar_sdk.abstract import SOARClient
 from soar_sdk.action_results import (
     ActionOutput,
@@ -53,6 +54,13 @@ class WhoisDomainParams(Params):
         primary=True,
         cef_types=["domain", "url"],
     )
+
+    @field_validator("domain")
+    @classmethod
+    def validate_domain(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Please provide a domain or URL")
+        return value
 
 
 class ContactOutput(PermissiveActionOutput):
@@ -163,8 +171,8 @@ def whois_domain(
         asset.server,
         asset.allow_public_fallback,
     )
-    contacts = response.get("contacts") or {}
-    if not contacts.get("registrant"):
+    contacts = response.get("contacts")
+    if contacts and not contacts.get("registrant"):
         if secondary_server := first_whois_server(response):
             response = fetch_whois_info(
                 domain,

@@ -107,6 +107,79 @@ def test_whois_domain_rejects_plain_ip():
         )
 
 
+@pytest.mark.parametrize("domain", ["", "   "])
+def test_whois_domain_params_reject_blank_values(domain):
+    with pytest.raises(ValidationError, match="Please provide a domain or URL"):
+        domain_action.WhoisDomainParams(domain=domain)
+
+
+def test_whois_domain_does_not_follow_referral_without_contacts(monkeypatch):
+    calls = []
+    response = {"whois_server": ["whois.referral.example"], "raw": ["no data"]}
+    monkeypatch.setattr(domain_action.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        domain_action, "get_domain", lambda _value, _asset: "example.com"
+    )
+    monkeypatch.setattr(domain_action, "configure_pythonwhois", lambda: None)
+    monkeypatch.setattr(
+        domain_action,
+        "fetch_whois_info",
+        lambda *args: calls.append(args) or response,
+    )
+
+    domain_action.whois_domain(
+        domain_action.WhoisDomainParams(domain="example.com"),
+        FakeSoar(),
+        SimpleNamespace(server=None, allow_public_fallback=False),
+    )
+
+    assert calls == [("example.com", None, False)]
+
+
+def test_whois_domain_follows_referral_when_contacts_lack_registrant(monkeypatch):
+    calls = []
+    responses = iter(
+        [
+            {
+                "contacts": {"admin": {"name": "Admin"}},
+                "whois_server": ["whois.referral.example"],
+            },
+            {"contacts": {"registrant": {"name": "Registrant"}}},
+        ]
+    )
+    monkeypatch.setattr(domain_action.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        domain_action, "get_domain", lambda _value, _asset: "example.com"
+    )
+    monkeypatch.setattr(domain_action, "configure_pythonwhois", lambda: None)
+    monkeypatch.setattr(
+        domain_action,
+        "fetch_whois_info",
+        lambda *args: calls.append(args) or next(responses),
+    )
+
+    domain_action.whois_domain(
+        domain_action.WhoisDomainParams(domain="example.com"),
+        FakeSoar(),
+        SimpleNamespace(server=None, allow_public_fallback=False),
+    )
+
+    assert calls == [
+        ("example.com", None, False),
+        ("example.com", "whois.referral.example", False),
+    ]
+
+
+def test_whois_ip_output_query_supports_ipv4_and_ipv6_cef_types():
+    query_field = next(
+        field
+        for field in ip_action.WhoisIpOutput._to_json_schema()
+        if field["data_path"] == "action_result.data.*.query"
+    )
+
+    assert query_field["contains"] == ["ip", "ipv6"]
+
+
 def test_whois_ip_preserves_response_and_summary(monkeypatch):
     response = {
         "asn": "18207",

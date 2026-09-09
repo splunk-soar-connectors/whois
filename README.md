@@ -213,7 +213,7 @@ action_result.data.\*.nets.\*.tech_emails | string | `email` | |
 action_result.data.\*.nets.\*.updated | string | | 2014-03-14 |
 action_result.data.\*.nets.\*.misc_emails | string | `email` | |
 action_result.data.\*.nir | string | | |
-action_result.data.\*.query | string | `ip` | 127.127.127.127 |
+action_result.data.\*.query | string | `ip` `ipv6` | 127.127.127.127 |
 action_result.data.\*.raw | string | | |
 action_result.data.\*.raw_referral | string | | |
 action_result.data.\*.referral | string | | |

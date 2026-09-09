@@ -102,7 +102,7 @@ class WhoisIpOutput(PermissiveActionOutput):
     nets: list[NetworkOutput] | None = None
     nir: str | None = None
     query: str | None = OutputField(
-        cef_types=["ip"], example_values=["127.127.127.127"]
+        cef_types=["ip", "ipv6"], example_values=["127.127.127.127"]
     )
     raw: str | None = None
     raw_referral: str | None = None
