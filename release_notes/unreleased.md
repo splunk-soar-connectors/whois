@@ -7,3 +7,4 @@
 * Converted the app to the Splunk SOAR SDK.
 * Escaped context-menu values rendered by the WHOIS domain custom view.
 * Rejected blank domain inputs, preserved legacy referral behavior, and classified IPv6 query results.
+* Added a configurable Test Connectivity target that validates the configured WHOIS server and public fallback behavior.

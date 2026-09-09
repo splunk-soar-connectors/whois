@@ -17,6 +17,7 @@ import gzip
 from types import SimpleNamespace
 
 import pytest
+import requests
 from soar_sdk.exceptions import ActionFailure
 
 from src import helper
@@ -104,6 +105,27 @@ def test_successful_refresh_persists_data_and_timestamp_together(monkeypatch):
         == MINIMAL_SUFFIX_LIST
     )
     assert CACHE_UPDATE_TIME in asset.cache_state.current
+
+
+def test_suffix_list_refresh_honors_https_proxy(monkeypatch):
+    observed_proxies = []
+
+    def send(_session, request, **kwargs):
+        observed_proxies.append(kwargs["proxies"])
+        response = requests.Response()
+        response.status_code = 200
+        response._content = MINIMAL_SUFFIX_LIST.encode()
+        response.request = request
+        return response
+
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.example:8443")
+    monkeypatch.setenv("https_proxy", "http://proxy.example:8443")
+    monkeypatch.setenv("NO_PROXY", "")
+    monkeypatch.setenv("no_proxy", "")
+    monkeypatch.setattr(requests.Session, "send", send)
+
+    assert helper._fetch_suffix_list() == MINIMAL_SUFFIX_LIST
+    assert observed_proxies[0]["https"] == "http://proxy.example:8443"
 
 
 def test_refresh_is_not_persisted_when_extraction_fails(monkeypatch):

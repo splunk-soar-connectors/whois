@@ -17,11 +17,12 @@ from types import SimpleNamespace
 import pytest
 from pydantic import ValidationError
 from soar_sdk.compat import MIN_PHANTOM_VERSION, PythonVersion
-from soar_sdk.exceptions import ActionFailure
+from soar_sdk.exceptions import ActionFailure, AssetMisconfiguration
 
 from src.app import Asset, app
 
 
+app_module = importlib.import_module("src.app")
 domain_action = importlib.import_module("src.actions.whois_domain")
 ip_action = importlib.import_module("src.actions.whois_ip")
 
@@ -38,15 +39,115 @@ class FakeSoar:
         self.summary = summary
 
 
-def test_asset_uses_sdk_runtime_defaults_and_preserves_fallback_default():
+def test_asset_uses_sdk_runtime_defaults_and_network_types():
     assert app.app_meta_info["python_version"] == PythonVersion.all_csv()
     assert app.app_meta_info["min_phantom_version"] == MIN_PHANTOM_VERSION
     asset = Asset(update_days=14)
     assert asset.server is None
     assert asset.allow_public_fallback is False
+    assert asset.test_connectivity_target == "1.1.1.1"
+    assert Asset(update_days=14, server=" WHOIS.EXAMPLE.COM. ").server == (
+        "whois.example.com"
+    )
 
     with pytest.raises(ValidationError, match="non-zero positive integer"):
         Asset(update_days=0)
+    with pytest.raises(ValidationError, match="valid IP address or hostname"):
+        Asset(update_days=14, server="https://whois.example.com")
+    with pytest.raises(ValidationError, match="valid IP address or hostname"):
+        Asset(update_days=14, test_connectivity_target="   ")
+
+
+def test_connectivity_uses_configured_server_and_logs_success(monkeypatch):
+    calls = []
+    info_messages = []
+    monkeypatch.setattr(
+        app_module,
+        "fetch_whois_info",
+        lambda *args: calls.append(args) or {"raw": ["response"]},
+    )
+    monkeypatch.setattr(
+        app_module.logger,
+        "info",
+        lambda message, *args: info_messages.append(message % args),
+    )
+    asset = Asset(
+        update_days=14,
+        server="whois.internal",
+        test_connectivity_target="example.com",
+    )
+
+    app_module.test_connectivity.__wrapped__(asset)
+
+    assert calls == [("example.com", "whois.internal", False)]
+    assert info_messages == [
+        (
+            "Test Connectivity passed using configured WHOIS server "
+            "'whois.internal' for 'example.com'"
+        )
+    ]
+
+
+def test_connectivity_fails_closed_and_logs_configured_server_error(monkeypatch):
+    warning_messages = []
+    monkeypatch.setattr(
+        app_module,
+        "fetch_whois_info",
+        lambda *_args: (_ for _ in ()).throw(ActionFailure("connection refused")),
+    )
+    monkeypatch.setattr(
+        app_module,
+        "lookup_ip",
+        lambda _target: pytest.fail("public fallback must remain disabled"),
+    )
+    monkeypatch.setattr(
+        app_module.logger,
+        "warning",
+        lambda message, *args: warning_messages.append(message % args),
+    )
+    asset = Asset(update_days=14, server="whois.internal")
+
+    with pytest.raises(AssetMisconfiguration, match="connection refused"):
+        app_module.test_connectivity.__wrapped__(asset)
+
+    assert warning_messages == [
+        (
+            "Configured WHOIS server 'whois.internal' failed for '1.1.1.1': "
+            "connection refused"
+        )
+    ]
+
+
+def test_connectivity_honors_public_fallback_for_ip_target(monkeypatch):
+    public_calls = []
+    info_messages = []
+    monkeypatch.setattr(
+        app_module,
+        "fetch_whois_info",
+        lambda *_args: (_ for _ in ()).throw(ActionFailure("connection refused")),
+    )
+    monkeypatch.setattr(
+        app_module,
+        "lookup_ip",
+        lambda target: public_calls.append(target) or {"query": target},
+    )
+    monkeypatch.setattr(
+        app_module.logger,
+        "info",
+        lambda message, *args: info_messages.append(message % args),
+    )
+    asset = Asset(
+        update_days=14,
+        server="whois.internal",
+        allow_public_fallback=True,
+    )
+
+    app_module.test_connectivity.__wrapped__(asset)
+
+    assert public_calls == ["1.1.1.1"]
+    assert info_messages == [
+        "Test Connectivity passed using public WHOIS for '1.1.1.1'"
+    ]
 
 
 def test_domain_output_preserves_legacy_contact_parent_datapaths():

@@ -16,6 +16,7 @@ from soar_sdk.app import App
 from soar_sdk.asset import AssetField, BaseAsset, FieldCategory
 from soar_sdk.exceptions import ActionFailure, AssetMisconfiguration
 from soar_sdk.logging import getLogger
+from soar_sdk.networking import Host
 
 from .actions.whois_domain import (
     WhoisDomainSummary,
@@ -23,7 +24,7 @@ from .actions.whois_domain import (
     whois_domain,
 )
 from .actions.whois_ip import WhoisIpSummary, whois_ip
-from .helper import lookup_ip
+from .helper import fetch_whois_info, is_ip, lookup_ip
 
 
 logger = getLogger()
@@ -36,9 +37,11 @@ class Asset(BaseAsset):
         default=14,
         category=FieldCategory.CONNECTIVITY,
     )
-    server: str | None = AssetField(
+    # SDK 4.3's Host alias cannot currently be wrapped in Optional, so retain the
+    # SDK's required=False compatibility behavior for this optional field.
+    server: Host = AssetField(
         required=False,
-        description="WHOIS server IP, hostname, or URL",
+        description="WHOIS server IP address or hostname",
         category=FieldCategory.CONNECTIVITY,
     )
     allow_public_fallback: bool = AssetField(
@@ -47,6 +50,12 @@ class Asset(BaseAsset):
             "Allow public WHOIS fallback when a configured server cannot be queried"
         ),
         default=False,
+        category=FieldCategory.CONNECTIVITY,
+    )
+    test_connectivity_target: Host = AssetField(
+        required=False,
+        description="IP address or hostname queried by Test Connectivity",
+        default="1.1.1.1",
         category=FieldCategory.CONNECTIVITY,
     )
 
@@ -73,13 +82,51 @@ app = App(
 
 
 @app.test_connectivity()
-def test_connectivity() -> None:
-    logger.progress("Querying...")
+def test_connectivity(asset: Asset) -> None:
+    target = asset.test_connectivity_target
+
+    if asset.server:
+        logger.progress(
+            "Querying configured WHOIS server '%s' for '%s'",
+            asset.server,
+            target,
+        )
+        try:
+            fetch_whois_info(target, asset.server, False)
+        except ActionFailure as configured_error:
+            logger.warning(
+                "Configured WHOIS server '%s' failed for '%s': %s",
+                asset.server,
+                target,
+                configured_error.message,
+            )
+            if not asset.allow_public_fallback:
+                raise AssetMisconfiguration(
+                    configured_error.message
+                ) from configured_error
+            logger.progress(
+                "Configured WHOIS server failed; querying public WHOIS for '%s'",
+                target,
+            )
+        else:
+            logger.info(
+                "Test Connectivity passed using configured WHOIS server '%s' for '%s'",
+                asset.server,
+                target,
+            )
+            return
+    else:
+        logger.progress("Querying public WHOIS for '%s'", target)
+
     try:
-        lookup_ip("1.1.1.1")
+        if is_ip(target):
+            lookup_ip(target)
+        else:
+            fetch_whois_info(target, None, False)
     except ActionFailure as error:
+        logger.error("Public WHOIS query failed for '%s': %s", target, error.message)
         raise AssetMisconfiguration(error.message) from error
-    logger.info("Test Connectivity Passed")
+    logger.info("Test Connectivity passed using public WHOIS for '%s'", target)
 
 
 app.register_action(

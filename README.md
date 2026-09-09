@@ -17,7 +17,13 @@ materialized in a temporary file for the duration of an action.
 When a server is configured, fallback to public WHOIS servers is disabled by default and can be
 enabled with the `allow_public_fallback` asset setting.
 
-This app will ignore the HTTP_PROXY and HTTPS_PROXY environment variables.
+Test Connectivity queries the configured WHOIS server using the configured test target. If public
+fallback is enabled, a failed configured-server query is retried using public WHOIS. The test target
+defaults to `1.1.1.1` and can be changed to an IP address or hostname in the asset settings.
+
+HTTP requests made by this app, including Public Suffix List refreshes, honor the `HTTP_PROXY` and
+`HTTPS_PROXY` environment variables. WHOIS traffic on TCP port 43 is not HTTP and is unaffected by
+those variables.
 
 The user is requested to use CONFIGURE NEW ASSET option to configure a new asset.
 
@@ -63,8 +69,9 @@ This table lists the configuration variables required to operate WHOIS. These va
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **update_days** | required | numeric | Update the tld list once every N days |
-**server** | optional | string | WHOIS server IP, hostname, or URL |
+**server** | optional | string | WHOIS server IP address or hostname |
 **allow_public_fallback** | optional | boolean | Allow public WHOIS fallback when a configured server cannot be queried |
+**test_connectivity_target** | optional | string | IP address or hostname queried by Test Connectivity |
 
 ### Supported Actions
 
