@@ -4,16 +4,26 @@ Publisher: Splunk <br>
 Connector Version: 2.2.13 <br>
 Product Vendor: Generic <br>
 Product Name: Whois <br>
-Minimum Product Version: 6.3.0
+Minimum Product Version: 7.0.0
 
 This app implements investigative actions that query the whois database
 
 The app uses the tldextract python module while executing the 'whois domain' action. This module
 uses the tld list from publicsuffix.org. The app ships with a tld list, however, it will try to
 update the list the first time it runs and then tries to update it at a regular interval. The
-interval is set in the app config.
+interval is set in the app config. The refreshed list is stored in per-asset state and only
+materialized in a temporary file for the duration of an action.
 
-This app will ignore the HTTP_PROXY and HTTPS_PROXY environment variables.
+When a server is configured, fallback to public WHOIS servers is disabled by default and can be
+enabled with the `allow_public_fallback` asset setting.
+
+Test Connectivity queries the configured WHOIS server using the configured test target. If public
+fallback is enabled, a failed configured-server query is retried using public WHOIS. The test target
+defaults to `1.1.1.1` and can be changed to an IP address or hostname in the asset settings.
+
+HTTP requests made by this app, including Public Suffix List refreshes, honor the `HTTP_PROXY` and
+`HTTPS_PROXY` environment variables. WHOIS traffic on TCP port 43 is not HTTP and is unaffected by
+those variables.
 
 The user is requested to use CONFIGURE NEW ASSET option to configure a new asset.
 
@@ -59,19 +69,24 @@ This table lists the configuration variables required to operate WHOIS. These va
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **update_days** | required | numeric | Update the tld list once every N days |
+**server** | optional | string | WHOIS server IP address or hostname |
+**allow_public_fallback** | optional | boolean | Allow public WHOIS fallback when a configured server cannot be queried |
+**test_connectivity_target** | optional | string | IP address or hostname queried by Test Connectivity |
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the configuration for connectivity <br>
+[test connectivity](#action-test-connectivity) - test connectivity <br>
 [whois domain](#action-whois-domain) - Execute a whois lookup on the given domain <br>
 [whois ip](#action-whois-ip) - Execute a whois lookup on the given IP
 
 ## action: 'test connectivity'
 
-Validate the configuration for connectivity
+test connectivity
 
 Type: **test** <br>
 Read only: **True**
+
+Basic test for app.
 
 #### Action Parameters
 
@@ -79,7 +94,12 @@ No parameters are required for this action
 
 #### Action Output
 
-No Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string | | success failure |
+action_result.message | string | | |
+summary.total_objects | numeric | | 1 |
+summary.total_objects_successful | numeric | | 1 |
 
 ## action: 'whois domain'
 
@@ -100,9 +120,10 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.status | string | | success failed |
-action_result.parameter.domain | string | `domain` `url` | example.com |
-action_result.data.\*.contacts.admin | string | | Test User |
+action_result.status | string | | success failure |
+action_result.message | string | | |
+action_result.parameter.domain | string | `domain` `url` | |
+action_result.data.\*.contacts.admin | string | | |
 action_result.data.\*.contacts.admin.city | string | | |
 action_result.data.\*.contacts.admin.country | string | | |
 action_result.data.\*.contacts.admin.email | string | `email` | |
@@ -141,17 +162,18 @@ action_result.data.\*.emails | string | `email` | abusecomplaints@testmonitor.co
 action_result.data.\*.expiration_date | string | | 2020-09-14T04:00:00 |
 action_result.data.\*.id | string | | 2138514_DOMAIN_COM-VRSN |
 action_result.data.\*.nameservers | string | | NS4.EXAMPLE.COM |
-action_result.data.\*.raw | string | | Domain Name: EXAMPLE.COM Registry Domain ID: 2138514_DOMAIN_COM-VRSN Registrar WHOIS Server: whois.testmonitor.com Registrar URL: http://www.testmonitor.com Updated Date: 2018-02-21T18:36:40Z Creation Date: 1997-09-15T04:00:00Z Registry Expiry Date: 2020-09-14T04:00:00Z Registrar: TestMonitor Inc. Registrar IANA ID: 292 Registrar Abuse Contact Email: abusecomplaints@testmonitor.com Registrar Abuse Contact Phone: +1.2083895740 Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited Domain Status: serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited Domain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited Domain Status: serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited Name Server: NS1.EXAMPLE.COM Name Server: NS2.EXAMPLE.COM Name Server: NS3.EXAMPLE.COM Name Server: NS4.EXAMPLE.COM DNSSEC: unsigned URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/ >>> Last update of whois database: 2018-11-16T06:11:04Z \<<< For more information on Whois status codes, please visit https://icann.org/epp NOTICE: The expiration date displayed in this record is the date the registrar's sponsorship of the domain name registration in the registry is currently set to expire. This date does not necessarily reflect the expiration date of the domain name registrant's agreement with the sponsoring registrar. Users may consult the sponsoring registrar's Whois database to view the registrar's reported date of expiration for this registration. TERMS OF USE: You are not authorized to access or query our Whois database through the use of electronic processes that are high-volume and automated except as reasonably necessary to register domain names or modify existing registrations; the Data in VeriSign Global Registry Services' ("VeriSign") Whois database is provided by VeriSign for information purposes only, and to assist persons in obtaining information about or related to a domain name registration record. VeriSign does not guarantee its accuracy. By submitting a Whois query, you agree to abide by the following terms of use: You agree that you may use this Data only for lawful purposes and that under no circumstances will you use this Data to: (1) allow, enable, or otherwise support the transmission of mass unsolicited, commercial advertising or solicitations via e-mail, telephone, or facsimile; or (2) enable high volume, automated, electronic processes that apply to VeriSign (or its computer systems). The compilation, repackaging, dissemination or other use of this Data is expressly prohibited without the prior written consent of VeriSign. You agree not to use electronic processes that are automated and high-volume to access or query the Whois database except as reasonably necessary to register domain names or modify existing registrations. VeriSign reserves the right to restrict your access to the Whois database in its sole discretion to ensure operational stability. VeriSign may restrict or terminate your access to the Whois database for failure to abide by these terms of use. VeriSign reserves the right to modify these terms at any time. The Registry database contains ONLY .COM, .NET, .EDU domains and Registrars. |
+action_result.data.\*.raw | string | | |
 action_result.data.\*.registrar | string | | TestMonitor Inc. |
 action_result.data.\*.status | string | | serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited |
 action_result.data.\*.updated_date | string | | 2018-02-21T18:36:40 |
 action_result.data.\*.whois_server | string | | whois.testmonitor.com |
+action_result.data.\*.queried_domain | string | `domain` `url` | |
+action_result.data.\*.status_message | string | | |
+action_result.summary.domain | string | `domain` `url` | example.com |
 action_result.summary.city | string | | |
 action_result.summary.country | string | | |
-action_result.summary.domain | string | `domain` `url` | example.com |
 action_result.summary.name | string | | |
 action_result.summary.organization | string | | |
-action_result.message | string | | Whois query did not return any information |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 
@@ -172,8 +194,9 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.status | string | | success failed |
-action_result.parameter.ip | string | `ip` `ipv6` | 127.127.127.127 |
+action_result.status | string | | success failure |
+action_result.message | string | | |
+action_result.parameter.ip | string | `ip` `ipv6` | |
 action_result.data.\*.asn | string | | 18207 |
 action_result.data.\*.asn_cidr | string | | 127.127.127.127/24 |
 action_result.data.\*.asn_country_code | string | | US |
@@ -189,24 +212,23 @@ action_result.data.\*.nets.\*.created | string | | |
 action_result.data.\*.nets.\*.description | string | | Level 3 Test, LLC |
 action_result.data.\*.nets.\*.emails | string | `email` | ipaddressing@level3.com |
 action_result.data.\*.nets.\*.handle | string | | NET-8-8-8-0-1 |
-action_result.data.\*.nets.\*.misc_emails | string | `email` | |
 action_result.data.\*.nets.\*.name | string | | LVLT-GOGL-8-8-8 |
 action_result.data.\*.nets.\*.postal_code | string | | 94043 |
 action_result.data.\*.nets.\*.range | string | | 127.127.127.127 - 127.127.143.255 |
 action_result.data.\*.nets.\*.state | string | | CA |
 action_result.data.\*.nets.\*.tech_emails | string | `email` | |
 action_result.data.\*.nets.\*.updated | string | | 2014-03-14 |
+action_result.data.\*.nets.\*.misc_emails | string | `email` | |
 action_result.data.\*.nir | string | | |
-action_result.data.\*.query | string | `ip` | 127.127.127.127 |
+action_result.data.\*.query | string | `ip` `ipv6` | 127.127.127.127 |
 action_result.data.\*.raw | string | | |
 action_result.data.\*.raw_referral | string | | |
 action_result.data.\*.referral | string | | |
 action_result.summary.asn | string | | 18207 |
 action_result.summary.country_code | string | | US |
-action_result.summary.nets.\*.address | string | | 100 Century DriveLinks |
-action_result.summary.nets.\*.range | string | | 127.127.127.127 - 127.127.143.255 |
+action_result.summary.nets.\*.address | string | | |
+action_result.summary.nets.\*.range | string | | |
 action_result.summary.registry | string | | apnic |
-action_result.message | string | | Registry: arin ASN: 15169 Country: US Nets: Range: 8.0.0.0 - 8.127.255.255 Address: 100 Century DriveLinks Range: None Address: 1600 AmphiLane Markway |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 

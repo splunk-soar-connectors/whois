@@ -1,9 +1,19 @@
 The app uses the tldextract python module while executing the 'whois domain' action. This module
 uses the tld list from publicsuffix.org. The app ships with a tld list, however, it will try to
 update the list the first time it runs and then tries to update it at a regular interval. The
-interval is set in the app config.
+interval is set in the app config. The refreshed list is stored in per-asset state and only
+materialized in a temporary file for the duration of an action.
 
-This app will ignore the HTTP_PROXY and HTTPS_PROXY environment variables.
+When a server is configured, fallback to public WHOIS servers is disabled by default and can be
+enabled with the `allow_public_fallback` asset setting.
+
+Test Connectivity queries the configured WHOIS server using the configured test target. If public
+fallback is enabled, a failed configured-server query is retried using public WHOIS. The test target
+defaults to `1.1.1.1` and can be changed to an IP address or hostname in the asset settings.
+
+HTTP requests made by this app, including Public Suffix List refreshes, honor the `HTTP_PROXY` and
+`HTTPS_PROXY` environment variables. WHOIS traffic on TCP port 43 is not HTTP and is unaffected by
+those variables.
 
 The user is requested to use CONFIGURE NEW ASSET option to configure a new asset.
 
