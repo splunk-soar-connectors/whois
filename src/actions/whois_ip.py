@@ -39,7 +39,7 @@ class WhoisIpParams(Params):
 
 
 class NetworkOutput(PermissiveActionOutput):
-    abuse_emails: str | None = OutputField(
+    abuse_emails: list[str] | None = OutputField(
         cef_types=["email"], column_name="Abuse Emails"
     )
     address: str | None = OutputField(
@@ -56,7 +56,7 @@ class NetworkOutput(PermissiveActionOutput):
     description: str | None = OutputField(
         example_values=["Level 3 Test, LLC"], column_name="Description"
     )
-    emails: str | None = OutputField(
+    emails: list[str] | None = OutputField(
         cef_types=["email"],
         example_values=["ipaddressing@level3.com"],
         column_name="Emails",
@@ -73,15 +73,52 @@ class NetworkOutput(PermissiveActionOutput):
         column_name="Range",
     )
     state: str | None = OutputField(example_values=["CA"], column_name="State")
-    tech_emails: str | None = OutputField(
+    tech_emails: list[str] | None = OutputField(
         cef_types=["email"], column_name="Tech Emails"
     )
     updated: str | None = OutputField(
         example_values=["2014-03-14"], column_name="Updated"
     )
-    misc_emails: str | None = OutputField(
+    misc_emails: list[str] | None = OutputField(
         cef_types=["email"], column_name="Misc Emails"
     )
+
+
+class NirContactOutput(PermissiveActionOutput):
+    name: str | None = None
+    email: str | None = OutputField(cef_types=["email"])
+    reply_email: str | None = OutputField(cef_types=["email"])
+    organization: str | None = None
+    division: str | None = None
+    title: str | None = None
+    phone: str | None = None
+    fax: str | None = None
+    updated: str | None = None
+
+
+class NirContactsOutput(PermissiveActionOutput):
+    admin: NirContactOutput | None = None
+    tech: NirContactOutput | None = None
+
+
+class NirNetworkOutput(PermissiveActionOutput):
+    cidr: str | None = None
+    name: str | None = None
+    handle: str | None = None
+    range: str | None = None
+    country: str | None = None
+    address: str | None = None
+    postal_code: str | None = None
+    nameservers: list[str] | None = None
+    created: str | None = None
+    updated: str | None = None
+    contacts: NirContactsOutput | None = None
+
+
+class NirOutput(PermissiveActionOutput):
+    query: str | None = OutputField(cef_types=["ip", "ipv6"])
+    nets: list[NirNetworkOutput] | None = None
+    raw: str | None = None
 
 
 class WhoisIpOutput(PermissiveActionOutput):
@@ -100,7 +137,7 @@ class WhoisIpOutput(PermissiveActionOutput):
         example_values=["apnic"], column_name="ASN Registry"
     )
     nets: list[NetworkOutput] | None = None
-    nir: str | None = None
+    nir: NirOutput | None = None
     query: str | None = OutputField(
         cef_types=["ip", "ipv6"], example_values=["127.127.127.127"]
     )

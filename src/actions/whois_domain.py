@@ -83,7 +83,7 @@ class ContactOutput(PermissiveActionOutput):
 
 class ContactsOutput(PermissiveActionOutput):
     admin: ContactOutput | None = None
-    billing: str | None = None
+    billing: ContactOutput | None = None
     registrant: ContactOutput | None = None
     tech: ContactOutput | None = None
 
@@ -100,32 +100,37 @@ class ContactsOutput(PermissiveActionOutput):
         for field_name in ("admin", "billing", "registrant", "tech"):
             datapath = f"{parent_datapath}.{field_name}"
             yield OutputFieldSpecification(data_path=datapath, data_type="string")
-            if field_name != "billing":
-                yield from ContactOutput._to_json_schema(
-                    datapath,
-                    column_order_counter,
-                )
+            yield from ContactOutput._to_json_schema(
+                datapath,
+                column_order_counter,
+            )
 
 
 class WhoisDomainOutput(PermissiveActionOutput):
     contacts: ContactsOutput | None = None
-    creation_date: str | None = OutputField(example_values=["1997-09-15T04:00:00"])
-    emails: str | None = OutputField(
+    creation_date: list[str] | None = OutputField(
+        example_values=["1997-09-15T04:00:00"]
+    )
+    emails: list[str] | None = OutputField(
         cef_types=["email"],
         example_values=["abusecomplaints@testmonitor.com"],
     )
-    expiration_date: str | None = OutputField(example_values=["2020-09-14T04:00:00"])
-    id: str | None = OutputField(example_values=["2138514_DOMAIN_COM-VRSN"])
-    nameservers: str | None = OutputField(example_values=["NS4.EXAMPLE.COM"])
-    raw: str | None = None
-    registrar: str | None = OutputField(example_values=["TestMonitor Inc."])
-    status: str | None = OutputField(
+    expiration_date: list[str] | None = OutputField(
+        example_values=["2020-09-14T04:00:00"]
+    )
+    id: list[str] | None = OutputField(example_values=["2138514_DOMAIN_COM-VRSN"])
+    nameservers: list[str] | None = OutputField(example_values=["NS4.EXAMPLE.COM"])
+    raw: list[str] | None = None
+    registrar: list[str] | None = OutputField(example_values=["TestMonitor Inc."])
+    status: list[str] | None = OutputField(
         example_values=[
             "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited"
         ]
     )
-    updated_date: str | None = OutputField(example_values=["2018-02-21T18:36:40"])
-    whois_server: str | None = OutputField(example_values=["whois.testmonitor.com"])
+    updated_date: list[str] | None = OutputField(example_values=["2018-02-21T18:36:40"])
+    whois_server: list[str] | None = OutputField(
+        example_values=["whois.testmonitor.com"]
+    )
     queried_domain: str | None = OutputField(cef_types=["domain", "url"])
     status_message: str | None = None
 

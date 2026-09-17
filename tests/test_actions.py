@@ -25,6 +25,7 @@ from src.app import Asset, app
 app_module = importlib.import_module("src.app")
 domain_action = importlib.import_module("src.actions.whois_domain")
 ip_action = importlib.import_module("src.actions.whois_ip")
+sdk_action_results = importlib.import_module("soar_sdk.action_results")
 
 
 class FakeSoar:
@@ -158,8 +159,41 @@ def test_domain_output_preserves_legacy_contact_parent_datapaths():
 
     assert "action_result.data.*.contacts.admin" in datapaths
     assert "action_result.data.*.contacts.admin.email" in datapaths
+    assert "action_result.data.*.contacts.billing.email" in datapaths
     assert "action_result.data.*.contacts.registrant" in datapaths
     assert "action_result.data.*.contacts.tech" in datapaths
+
+
+def test_domain_output_models_upstream_collection_shapes_without_warnings(
+    monkeypatch,
+):
+    warnings = []
+    monkeypatch.setattr(sdk_action_results, "warning", warnings.append)
+
+    output = domain_action.WhoisDomainOutput(
+        contacts={"billing": {"email": "billing@example.com"}},
+        creation_date=["1997-09-15T04:00:00"],
+        emails=["abuse@example.com"],
+        expiration_date=["2020-09-14T04:00:00"],
+        id=["2138514_DOMAIN_COM-VRSN"],
+        nameservers=["ns1.example.com"],
+        raw=["Domain Name: EXAMPLE.COM"],
+        registrar=["Example Registrar"],
+        status=["clientTransferProhibited"],
+        updated_date=["2018-02-21T18:36:40"],
+        whois_server=["whois.example.com"],
+    )
+
+    assert warnings == []
+    assert output.contacts.billing.email == "billing@example.com"
+    datapaths = {
+        field["data_path"]
+        for field in domain_action.WhoisDomainOutput._to_json_schema()
+    }
+    assert "action_result.data.*.creation_date.*" in datapaths
+    assert "action_result.data.*.emails.*" in datapaths
+    assert "action_result.data.*.raw.*" in datapaths
+    assert "action_result.data.*.whois_server.*" in datapaths
 
 
 def test_whois_domain_preserves_contacts_despite_raw_marker(monkeypatch):
@@ -310,6 +344,45 @@ def test_whois_ip_output_query_supports_ipv4_and_ipv6_cef_types():
     )
 
     assert query_field["contains"] == ["ip", "ipv6"]
+
+
+def test_whois_ip_output_models_email_and_nir_shapes_without_warnings(monkeypatch):
+    warnings = []
+    monkeypatch.setattr(sdk_action_results, "warning", warnings.append)
+
+    output = ip_action.WhoisIpOutput(
+        nets=[
+            {
+                "emails": ["network@example.com"],
+                "abuse_emails": ["abuse@example.com"],
+                "tech_emails": ["tech@example.com"],
+                "misc_emails": ["misc@example.com"],
+            }
+        ],
+        nir={
+            "query": "2001:db8::1",
+            "nets": [
+                {
+                    "name": "EXAMPLE-NET",
+                    "nameservers": ["ns1.example.com"],
+                    "contacts": {
+                        "admin": {"email": "admin@example.com"},
+                    },
+                }
+            ],
+        },
+    )
+
+    assert warnings == []
+    assert output.nets[0].emails == ["network@example.com"]
+    assert output.nir.nets[0].contacts.admin.email == "admin@example.com"
+    datapaths = {
+        field["data_path"] for field in ip_action.WhoisIpOutput._to_json_schema()
+    }
+    assert "action_result.data.*.nets.*.emails.*" in datapaths
+    assert "action_result.data.*.nir.query" in datapaths
+    assert "action_result.data.*.nir.nets.*.nameservers.*" in datapaths
+    assert "action_result.data.*.nir.nets.*.contacts.admin.email" in datapaths
 
 
 def test_whois_ip_preserves_response_and_summary(monkeypatch):

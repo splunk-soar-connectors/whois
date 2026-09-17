@@ -135,6 +135,16 @@ action_result.data.\*.contacts.admin.postalcode | string | | |
 action_result.data.\*.contacts.admin.state | string | | |
 action_result.data.\*.contacts.admin.street | string | | |
 action_result.data.\*.contacts.billing | string | | |
+action_result.data.\*.contacts.billing.city | string | | |
+action_result.data.\*.contacts.billing.country | string | | |
+action_result.data.\*.contacts.billing.email | string | `email` | |
+action_result.data.\*.contacts.billing.fax | string | | |
+action_result.data.\*.contacts.billing.name | string | | |
+action_result.data.\*.contacts.billing.organization | string | | |
+action_result.data.\*.contacts.billing.phone | string | | |
+action_result.data.\*.contacts.billing.postalcode | string | | |
+action_result.data.\*.contacts.billing.state | string | | |
+action_result.data.\*.contacts.billing.street | string | | |
 action_result.data.\*.contacts.registrant | string | | |
 action_result.data.\*.contacts.registrant.city | string | | |
 action_result.data.\*.contacts.registrant.country | string | | |
@@ -157,16 +167,16 @@ action_result.data.\*.contacts.tech.phone | string | | |
 action_result.data.\*.contacts.tech.postalcode | string | | |
 action_result.data.\*.contacts.tech.state | string | | |
 action_result.data.\*.contacts.tech.street | string | | |
-action_result.data.\*.creation_date | string | | 1997-09-15T04:00:00 |
-action_result.data.\*.emails | string | `email` | abusecomplaints@testmonitor.com |
-action_result.data.\*.expiration_date | string | | 2020-09-14T04:00:00 |
-action_result.data.\*.id | string | | 2138514_DOMAIN_COM-VRSN |
-action_result.data.\*.nameservers | string | | NS4.EXAMPLE.COM |
-action_result.data.\*.raw | string | | |
-action_result.data.\*.registrar | string | | TestMonitor Inc. |
-action_result.data.\*.status | string | | serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited |
-action_result.data.\*.updated_date | string | | 2018-02-21T18:36:40 |
-action_result.data.\*.whois_server | string | | whois.testmonitor.com |
+action_result.data.\*.creation_date.\* | string | | 1997-09-15T04:00:00 |
+action_result.data.\*.emails.\* | string | `email` | abusecomplaints@testmonitor.com |
+action_result.data.\*.expiration_date.\* | string | | 2020-09-14T04:00:00 |
+action_result.data.\*.id.\* | string | | 2138514_DOMAIN_COM-VRSN |
+action_result.data.\*.nameservers.\* | string | | NS4.EXAMPLE.COM |
+action_result.data.\*.raw.\* | string | | |
+action_result.data.\*.registrar.\* | string | | TestMonitor Inc. |
+action_result.data.\*.status.\* | string | | serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited |
+action_result.data.\*.updated_date.\* | string | | 2018-02-21T18:36:40 |
+action_result.data.\*.whois_server.\* | string | | whois.testmonitor.com |
 action_result.data.\*.queried_domain | string | `domain` `url` | |
 action_result.data.\*.status_message | string | | |
 action_result.summary.domain | string | `domain` `url` | example.com |
@@ -203,23 +213,52 @@ action_result.data.\*.asn_country_code | string | | US |
 action_result.data.\*.asn_date | string | | 2000-04-27 |
 action_result.data.\*.asn_description | string | | |
 action_result.data.\*.asn_registry | string | | apnic |
-action_result.data.\*.nets.\*.abuse_emails | string | `email` | |
+action_result.data.\*.nets.\*.abuse_emails.\* | string | `email` | |
 action_result.data.\*.nets.\*.address | string | | 1600 AmphiLane Markway |
 action_result.data.\*.nets.\*.cidr | string | | 127.127.127.127/20 |
 action_result.data.\*.nets.\*.city | string | | San Franscisco |
 action_result.data.\*.nets.\*.country | string | | US |
 action_result.data.\*.nets.\*.created | string | | |
 action_result.data.\*.nets.\*.description | string | | Level 3 Test, LLC |
-action_result.data.\*.nets.\*.emails | string | `email` | ipaddressing@level3.com |
+action_result.data.\*.nets.\*.emails.\* | string | `email` | ipaddressing@level3.com |
 action_result.data.\*.nets.\*.handle | string | | NET-8-8-8-0-1 |
 action_result.data.\*.nets.\*.name | string | | LVLT-GOGL-8-8-8 |
 action_result.data.\*.nets.\*.postal_code | string | | 94043 |
 action_result.data.\*.nets.\*.range | string | | 127.127.127.127 - 127.127.143.255 |
 action_result.data.\*.nets.\*.state | string | | CA |
-action_result.data.\*.nets.\*.tech_emails | string | `email` | |
+action_result.data.\*.nets.\*.tech_emails.\* | string | `email` | |
 action_result.data.\*.nets.\*.updated | string | | 2014-03-14 |
-action_result.data.\*.nets.\*.misc_emails | string | `email` | |
-action_result.data.\*.nir | string | | |
+action_result.data.\*.nets.\*.misc_emails.\* | string | `email` | |
+action_result.data.\*.nir.query | string | `ip` `ipv6` | |
+action_result.data.\*.nir.nets.\*.cidr | string | | |
+action_result.data.\*.nir.nets.\*.name | string | | |
+action_result.data.\*.nir.nets.\*.handle | string | | |
+action_result.data.\*.nir.nets.\*.range | string | | |
+action_result.data.\*.nir.nets.\*.country | string | | |
+action_result.data.\*.nir.nets.\*.address | string | | |
+action_result.data.\*.nir.nets.\*.postal_code | string | | |
+action_result.data.\*.nir.nets.\*.nameservers.\* | string | | |
+action_result.data.\*.nir.nets.\*.created | string | | |
+action_result.data.\*.nir.nets.\*.updated | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.name | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.email | string | `email` | |
+action_result.data.\*.nir.nets.\*.contacts.admin.reply_email | string | `email` | |
+action_result.data.\*.nir.nets.\*.contacts.admin.organization | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.division | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.title | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.phone | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.fax | string | | |
+action_result.data.\*.nir.nets.\*.contacts.admin.updated | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.name | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.email | string | `email` | |
+action_result.data.\*.nir.nets.\*.contacts.tech.reply_email | string | `email` | |
+action_result.data.\*.nir.nets.\*.contacts.tech.organization | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.division | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.title | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.phone | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.fax | string | | |
+action_result.data.\*.nir.nets.\*.contacts.tech.updated | string | | |
+action_result.data.\*.nir.raw | string | | |
 action_result.data.\*.query | string | `ip` `ipv6` | 127.127.127.127 |
 action_result.data.\*.raw | string | | |
 action_result.data.\*.raw_referral | string | | |

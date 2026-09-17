@@ -10,3 +10,4 @@
 * Added a configurable Test Connectivity target that validates the configured WHOIS server and public fallback behavior.
 * Added IPv6 support for configured WHOIS servers.
 * Rejected malformed domain queries before sending raw WHOIS requests.
+* Corrected WHOIS output metadata for list-valued and nested NIR response fields.
