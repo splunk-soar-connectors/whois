@@ -214,6 +214,37 @@ def test_whois_domain_params_reject_blank_values(domain):
         domain_action.WhoisDomainParams(domain=domain)
 
 
+@pytest.mark.parametrize("domain", ["example.com\r\nhelp", "example.com\x00"])
+def test_whois_domain_params_reject_control_characters(domain):
+    with pytest.raises(ValidationError, match="control characters"):
+        domain_action.WhoisDomainParams(domain=domain)
+
+
+@pytest.mark.parametrize("normalized_domain", ["", "not a domain"])
+def test_whois_domain_rejects_invalid_normalized_domain(monkeypatch, normalized_domain):
+    monkeypatch.setattr(domain_action.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        domain_action, "get_domain", lambda _value, _asset: normalized_domain
+    )
+    monkeypatch.setattr(
+        domain_action,
+        "configure_pythonwhois",
+        lambda: pytest.fail("invalid domains must not configure the WHOIS client"),
+    )
+    monkeypatch.setattr(
+        domain_action,
+        "fetch_whois_info",
+        lambda *_args: pytest.fail("invalid domains must not be queried"),
+    )
+
+    with pytest.raises(ActionFailure, match="failed validation"):
+        domain_action.whois_domain(
+            domain_action.WhoisDomainParams(domain="invalid.example"),
+            FakeSoar(),
+            SimpleNamespace(server=None, allow_public_fallback=False),
+        )
+
+
 def test_whois_domain_does_not_follow_referral_without_contacts(monkeypatch):
     calls = []
     response = {"whois_server": ["whois.referral.example"], "raw": ["no data"]}

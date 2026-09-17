@@ -109,6 +109,20 @@ def test_whois_request_supports_ipv6_servers(monkeypatch):
     assert response == "Domain Name: EXAMPLE.COM\r\n"
 
 
+@pytest.mark.parametrize("query", ["", "example.com test", "example.com\r\nhelp"])
+def test_whois_request_rejects_invalid_queries_before_connecting(monkeypatch, query):
+    monkeypatch.setattr(
+        helper.socket,
+        "create_connection",
+        lambda *_args, **_kwargs: pytest.fail(
+            "invalid queries must be rejected before connecting"
+        ),
+    )
+
+    with pytest.raises(ValueError, match="WHOIS query"):
+        helper.monkey_patched_whois_request(query, "whois.example")
+
+
 def test_failed_refresh_uses_stale_state_without_advancing_timestamp(monkeypatch):
     old_timestamp = "2000-01-01T00:00:00.000000Z"
     asset = make_asset(

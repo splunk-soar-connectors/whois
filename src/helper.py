@@ -21,6 +21,7 @@ import json
 import pkgutil
 import socket
 import tempfile
+import unicodedata
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
@@ -77,6 +78,18 @@ def is_ip(value: object) -> bool:
     return True
 
 
+def has_control_characters(value: str) -> bool:
+    """Return whether text contains Unicode control characters."""
+    return any(unicodedata.category(character) == "Cc" for character in value)
+
+
+def _validate_whois_query(query: str) -> None:
+    if not query or any(character.isspace() for character in query):
+        raise ValueError("WHOIS query must be a non-empty hostname without whitespace")
+    if has_control_characters(query):
+        raise ValueError("WHOIS query must not contain control characters")
+
+
 def _json_fallback(value: object) -> str:
     if isinstance(value, datetime.datetime):
         return value.isoformat()
@@ -93,6 +106,7 @@ def monkey_patched_whois_request(domain: str, server: str, port: int = 43) -> st
     """Read a bounded WHOIS response while tolerating non-UTF-8 registries."""
     from charset_normalizer import detect  # noqa: PLC0415
 
+    _validate_whois_query(domain)
     sock = socket.create_connection(
         (server, port), timeout=WHOIS_SOCKET_TIMEOUT_SECONDS
     )

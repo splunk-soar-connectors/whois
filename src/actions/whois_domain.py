@@ -15,7 +15,7 @@ import itertools
 import time
 from collections.abc import Iterator
 
-from pydantic import field_validator
+from pydantic import TypeAdapter, ValidationError, field_validator
 from soar_sdk.abstract import SOARClient
 from soar_sdk.action_results import (
     ActionOutput,
@@ -25,6 +25,7 @@ from soar_sdk.action_results import (
 )
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
+from soar_sdk.networking import Host
 from soar_sdk.params import Param, Params
 
 from ..consts import (
@@ -39,6 +40,7 @@ from ..helper import (
     fetch_whois_info,
     first_whois_server,
     get_domain,
+    has_control_characters,
     is_ip,
     make_json_safe,
     response_has_no_contact_data,
@@ -46,6 +48,7 @@ from ..helper import (
 
 
 logger = getLogger()
+host_adapter = TypeAdapter(Host)
 
 
 class WhoisDomainParams(Params):
@@ -60,6 +63,8 @@ class WhoisDomainParams(Params):
     def validate_domain(cls, value: str) -> str:
         if not value.strip():
             raise ValueError("Please provide a domain or URL")
+        if has_control_characters(value):
+            raise ValueError("Domain or URL must not contain control characters")
         return value
 
 
@@ -161,6 +166,11 @@ def whois_domain(
     except Exception as error:
         detail = error_message_from_exception(error)
         raise ActionFailure(f"Unable to parse input data: {detail}") from error
+
+    try:
+        domain = host_adapter.validate_python(domain)
+    except ValidationError as error:
+        raise ActionFailure("Parameter 'domain' failed validation") from error
 
     logger.debug("Validating/querying domain %r", domain)
     logger.progress("Querying...")

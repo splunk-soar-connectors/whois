@@ -9,3 +9,4 @@
 * Rejected blank domain inputs, preserved legacy referral and public fallback behavior, and classified IPv6 query results.
 * Added a configurable Test Connectivity target that validates the configured WHOIS server and public fallback behavior.
 * Added IPv6 support for configured WHOIS servers.
+* Rejected malformed domain queries before sending raw WHOIS requests.
