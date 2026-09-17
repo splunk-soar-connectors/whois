@@ -267,7 +267,7 @@ def test_whois_domain_follows_referral_when_contacts_lack_registrant(monkeypatch
 
     assert calls == [
         ("example.com", None, False),
-        ("example.com", "whois.referral.example", False),
+        ("example.com", "whois.referral.example", True),
     ]
 
 

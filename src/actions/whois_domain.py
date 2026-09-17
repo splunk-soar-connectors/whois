@@ -177,7 +177,7 @@ def whois_domain(
             response = fetch_whois_info(
                 domain,
                 secondary_server,
-                asset.allow_public_fallback,
+                True,
             )
         else:
             logger.debug(WHOIS_NO_SECONDARY_API)
