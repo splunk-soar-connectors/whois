@@ -8,3 +8,4 @@
 * Escaped context-menu values rendered by the WHOIS domain custom view.
 * Rejected blank domain inputs, preserved legacy referral and public fallback behavior, and classified IPv6 query results.
 * Added a configurable Test Connectivity target that validates the configured WHOIS server and public fallback behavior.
+* Added IPv6 support for configured WHOIS servers.

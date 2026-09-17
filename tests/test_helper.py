@@ -60,6 +60,22 @@ def make_asset(current=None, legacy=None, update_days=14):
     )
 
 
+class FakeWhoisSocket:
+    def __init__(self, responses):
+        self.responses = iter(responses)
+        self.sent = []
+        self.closed = False
+
+    def sendall(self, data):
+        self.sent.append(data)
+
+    def recv(self, _size):
+        return next(self.responses)
+
+    def close(self):
+        self.closed = True
+
+
 def test_get_domain_uses_fresh_state_without_fetching(monkeypatch):
     now = datetime.datetime.now(datetime.UTC).strftime(ISO_TIME_FORMAT)
     asset = make_asset(
@@ -73,6 +89,24 @@ def test_get_domain_uses_fresh_state_without_fetching(monkeypatch):
 
     assert helper.get_domain("www.example.co.uk", asset) == "example.co.uk"
     assert asset.cache_state.saved == []
+
+
+def test_whois_request_supports_ipv6_servers(monkeypatch):
+    connections = []
+    sock = FakeWhoisSocket([b"Domain Name: EXAMPLE.COM\r\n", b""])
+
+    def create_connection(address, timeout):
+        connections.append((address, timeout))
+        return sock
+
+    monkeypatch.setattr(helper.socket, "create_connection", create_connection)
+
+    response = helper.monkey_patched_whois_request("example.com", "2001:db8::43")
+
+    assert connections == [(("2001:db8::43", 43), helper.WHOIS_SOCKET_TIMEOUT_SECONDS)]
+    assert sock.sent == [b"example.com\r\n"]
+    assert sock.closed is True
+    assert response == "Domain Name: EXAMPLE.COM\r\n"
 
 
 def test_failed_refresh_uses_stale_state_without_advancing_timestamp(monkeypatch):

@@ -93,10 +93,10 @@ def monkey_patched_whois_request(domain: str, server: str, port: int = 43) -> st
     """Read a bounded WHOIS response while tolerating non-UTF-8 registries."""
     from charset_normalizer import detect  # noqa: PLC0415
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = socket.create_connection(
+        (server, port), timeout=WHOIS_SOCKET_TIMEOUT_SECONDS
+    )
     try:
-        sock.settimeout(WHOIS_SOCKET_TIMEOUT_SECONDS)
-        sock.connect((server, port))
         sock.sendall(f"{domain}\r\n".encode())
         response = bytearray()
         while len(response) < WHOIS_MAX_RESPONSE_BYTES:
