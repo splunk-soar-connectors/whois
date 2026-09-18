@@ -1,6 +1,6 @@
 [project]
 name = "whois"
-version = "2.2.13"
+version = "3.0.0"
 description = "This app implements investigative actions that query the whois database"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
