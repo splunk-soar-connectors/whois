@@ -19,6 +19,7 @@ from pydantic import ValidationError
 from soar_sdk.compat import MIN_PHANTOM_VERSION, PythonVersion
 from soar_sdk.exceptions import ActionFailure, AssetMisconfiguration
 
+from src import helper
 from src.app import Asset, app
 
 
@@ -419,3 +420,40 @@ def test_whois_ip_rejects_non_ip():
             FakeSoar(),
             SimpleNamespace(),
         )
+
+
+def test_domain_action_queries_whois_when_optional_cache_write_fails(monkeypatch):
+    queries = []
+
+    def unavailable(_state):
+        raise ValueError("plaintext exceeds encryption limit")
+
+    cache = SimpleNamespace(
+        get_all=lambda: {},
+        put_all=unavailable,
+        backend=SimpleNamespace(load_state=lambda: {}),
+    )
+    asset = SimpleNamespace(
+        cache_state=cache,
+        update_days=14,
+        server="whois.example.invalid",
+        allow_public_fallback=False,
+    )
+
+    def query(domain, server, allow_public_fallback):
+        queries.append((domain, server, allow_public_fallback))
+        return {"contacts": {"registrant": {"name": "Example Owner"}}}
+
+    monkeypatch.setattr(helper, "_fetch_suffix_list", lambda: "// fixture\ncom\n")
+    monkeypatch.setattr(domain_action.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(domain_action, "configure_pythonwhois", lambda: None)
+    monkeypatch.setattr(domain_action, "fetch_whois_info", query)
+    soar = FakeSoar()
+
+    output = domain_action.whois_domain(
+        domain_action.WhoisDomainParams(domain="www.example.com"), soar, asset
+    )
+
+    assert queries == [("example.com", asset.server, False)]
+    assert soar.summary.domain == "example.com"
+    assert output.contacts.registrant.name == "Example Owner"

@@ -172,6 +172,17 @@ def lookup_ip(ip: str) -> dict[str, Any]:
     return response
 
 
+def _save_suffix_cache(asset: Asset, state: dict[str, Any]) -> None:
+    """Keep optional cache persistence from interrupting domain lookups."""
+    try:
+        asset.cache_state.put_all(state)
+    except Exception as error:
+        logger.debug(
+            "Unable to persist optional Public Suffix List cache (%s)",
+            type(error).__name__,
+        )
+
+
 def _cache_state(asset: Asset) -> dict[str, Any]:
     """Load SDK cache state, migrating this PR's flat BaseConnector state once."""
     current = dict(asset.cache_state.get_all())
@@ -191,7 +202,7 @@ def _cache_state(asset: Asset) -> dict[str, Any]:
     }
     if migrated:
         current.update(migrated)
-        asset.cache_state.put_all(current)
+        _save_suffix_cache(asset, current)
     return current
 
 
@@ -280,7 +291,7 @@ def _store_suffix_list(asset: Asset, state: dict[str, Any], suffix_list: str) ->
     updated_state[CACHE_UPDATE_TIME] = datetime.datetime.now(datetime.UTC).strftime(
         ISO_TIME_FORMAT
     )
-    asset.cache_state.put_all(updated_state)
+    _save_suffix_cache(asset, updated_state)
 
 
 def get_domain(hostname: str, asset: Asset) -> str:
