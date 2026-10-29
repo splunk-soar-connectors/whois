@@ -14,6 +14,7 @@
 import base64
 import datetime
 import gzip
+import random
 from types import SimpleNamespace
 
 import pytest
@@ -257,3 +258,54 @@ def test_parsed_contacts_override_raw_no_data_marker():
         "raw": ["Domain not found"],
     }
     assert helper.response_has_no_contact_data(response, "example.com") is False
+
+
+@pytest.mark.parametrize("legacy", [False, True], ids=["refresh", "migration"])
+def test_oversized_optional_cache_does_not_prevent_domain_lookup(monkeypatch, legacy):
+    # A deterministic, incompressible comment models the current PSL cache size.
+    suffix_list = (
+        MINIMAL_SUFFIX_LIST
+        + "// "
+        + base64.b64encode(random.Random(0).randbytes(100_000)).decode()
+        + "\n"
+    )
+    encoded = encoded_suffix_list(suffix_list)
+    assert len(encoded.encode()) > 65_536
+    cached = {
+        CACHE_DATA: encoded,
+        CACHE_UPDATE_TIME: datetime.datetime.now(datetime.UTC).strftime(
+            ISO_TIME_FORMAT
+        ),
+    }
+    asset = make_asset(legacy=cached if legacy else None)
+    monkeypatch.setattr(helper, "_fetch_suffix_list", lambda: suffix_list)
+    save = asset.cache_state.put_all
+
+    def limited_save(state):
+        if len(state.get(CACHE_DATA, "").encode()) > 65_536:
+            raise ValueError("plaintext exceeds 65536 bytes")
+        save(state)
+
+    monkeypatch.setattr(asset.cache_state, "put_all", limited_save)
+
+    assert helper.get_domain("www.example.com", asset) == "example.com"
+    assert asset.cache_state.current == {}
+    assert asset.cache_state.saved == []
+
+
+def test_failed_cache_write_keeps_persisted_refresh_timestamp(monkeypatch):
+    cached = {
+        CACHE_DATA: encoded_suffix_list(),
+        CACHE_UPDATE_TIME: "2000-01-01T00:00:00.000000Z",
+    }
+    asset = make_asset(current=cached)
+    monkeypatch.setattr(helper, "_fetch_suffix_list", lambda: MINIMAL_SUFFIX_LIST)
+
+    def unavailable(_state):
+        raise OSError("cache backend unavailable")
+
+    monkeypatch.setattr(asset.cache_state, "put_all", unavailable)
+
+    assert helper.get_domain("www.example.com", asset) == "example.com"
+    assert asset.cache_state.current == cached
+    assert asset.cache_state.saved == []
